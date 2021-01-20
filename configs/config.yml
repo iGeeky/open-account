@@ -1,0 +1,24 @@
+log_level: debug
+server_env: local-dev
+log_filename: /data/logs/open-account.log
+# listen 0.0.0.0 only for test.
+listen: 0.0.0.0:2021
+check_sign: true
+debug: true
+disable_stacktrace: false
+
+mysql:
+  host: 127.0.0.1
+  port: 15432
+  db_name: openaccount
+  user: oa
+  password: 123456
+  debug: true
+token_redis:
+  cache_name: token
+  addr: 127.0.0.1:6379
+  db_index: 1
+sms_redis:
+  cache_name: sms
+  addr: 127.0.0.1:6379
+  db_index: 2
