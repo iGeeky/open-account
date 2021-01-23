@@ -6,12 +6,14 @@ listen: 0.0.0.0:2021
 check_sign: true
 debug: true
 disable_stacktrace: false
+super_key_for_test: 91af98b3bd246347f8d6eea0573ef7e7
 
-mysql:
+account_database:
+  dialect: mysql
   host: 127.0.0.1
-  port: 15432
+  port: 3306
   db_name: openaccount
-  user: oa
+  user: openaccount
   password: 123456
   debug: true
 token_redis:

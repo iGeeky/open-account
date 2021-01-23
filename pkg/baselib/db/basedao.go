@@ -14,6 +14,7 @@ import (
 
 	"open-account/pkg/baselib/log"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
@@ -44,9 +45,9 @@ func uriDebug(dbURI string) string {
 	return regexPassword.ReplaceAllString(dbURI, "password=******")
 }
 
-func initDBInternal(dbURI string, sqlDebug bool) (db *gorm.DB) {
+func initDBInternal(dialect, dbURI string, sqlDebug bool) (db *gorm.DB) {
 	var err error
-	db, err = gorm.Open("postgres", dbURI)
+	db, err = gorm.Open(dialect, dbURI)
 	if err != nil {
 		log.Panicf("open database(%s) failed! err: %v", uriDebug(dbURI), err)
 	} else {
@@ -67,7 +68,7 @@ func initDBInternal(dbURI string, sqlDebug bool) (db *gorm.DB) {
 
 var dbMap sync.Map
 
-func initDB(dbURL string, sqlDebug bool) (db *gorm.DB) {
+func initDB(dialect, dbURL string, sqlDebug bool) (db *gorm.DB) {
 	var ok bool
 	value, ok := dbMap.Load(dbURL)
 	if ok {
@@ -75,7 +76,7 @@ func initDB(dbURL string, sqlDebug bool) (db *gorm.DB) {
 		return
 	}
 
-	db = initDBInternal(dbURL, sqlDebug)
+	db = initDBInternal(dialect, dbURL, sqlDebug)
 
 	dbMap.Store(dbURL, db)
 	// log.Infof("open database(%s) ok!", uriDebug(dbURL))
@@ -84,6 +85,7 @@ func initDB(dbURL string, sqlDebug bool) (db *gorm.DB) {
 
 // SharedDao 共享数据库链接对象的Dao
 type SharedDao struct {
+	dialect  string
 	dbURL    string
 	sqlDebug bool
 	db       *gorm.DB
@@ -91,8 +93,8 @@ type SharedDao struct {
 	inTx     bool //是否处于事务中.
 }
 
-func newSharedDao(dbURL string, sqlDebug bool) (dao *SharedDao) {
-	dao = &SharedDao{dbURL: dbURL, sqlDebug: sqlDebug, db: initDB(dbURL, sqlDebug)}
+func newSharedDao(dialect, dbURL string, sqlDebug bool) (dao *SharedDao) {
+	dao = &SharedDao{dialect: dialect, dbURL: dbURL, sqlDebug: sqlDebug, db: initDB(dialect, dbURL, sqlDebug)}
 	return
 }
 
@@ -113,8 +115,8 @@ func (p *BaseDao) TableName() (tableName string) {
 }
 
 // NewBaseDao 创建新的BaseDao, model指定对应的模型类
-func NewBaseDao(dbURL string, sqlDebug bool, model interface{}) (dao *BaseDao) {
-	dao = &BaseDao{model: model, dao: newSharedDao(dbURL, sqlDebug)}
+func NewBaseDao(dialect, dbURL string, sqlDebug bool, model interface{}) (dao *BaseDao) {
+	dao = &BaseDao{model: model, dao: newSharedDao(dialect, dbURL, sqlDebug)}
 	return
 }
 

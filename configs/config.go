@@ -21,28 +21,28 @@ type CORS struct {
 	MaxAge           int    `toml:"max_age"`
 }
 
-// MysqlConfig Mysql配置.
-type MysqlConfig struct {
-	Host         string
-	Port         int
-	DBName       string `yaml:"db_name"`
-	User         string
-	Password     string
-	MaxOpenConns int `yaml:"max_open_conns"` //最大链接数.
-	MaxIdleConns int `yaml:"max_idle_conns"` //最大闲置链接数
+// DatabaseConfig 数据库配置.
+type DatabaseConfig struct {
+	Dialect      string `yaml:"dialect"`
+	Host         string `yaml:"host"`
+	Port         int    `yaml:"port"`
+	Database     string `yaml:"database"`
+	User         string `yaml:"user"`
+	Password     string `yaml:"password"`
+	MaxOpenConns int    `yaml:"max_open_conns"` //最大链接数.
+	MaxIdleConns int    `yaml:"max_idle_conns"` //最大闲置链接数
 	Debug        bool
 }
 
-func (p *MysqlConfig) ToURL() (url string) {
-	url = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		p.Host, p.Port, p.User, p.Password, p.DBName)
-	return
-}
-
-func (p *MysqlConfig) ToSecretURL() (url string) {
-	password := p.Password
-	url = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		p.Host, p.Port, p.User, password, p.DBName)
+// ToURL 获取dns链接
+func (p *DatabaseConfig) ToURL() (url string) {
+	if p.Dialect == "postgres" {
+		url = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+			p.Host, p.Port, p.User, p.Password, p.Database)
+	} else {
+		url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			p.User, p.Password, p.Host, p.Port, p.Database)
+	}
 	return
 }
 
@@ -61,14 +61,17 @@ type ServerConfig struct {
 	TestAccounts map[string]string `yaml:"test_accounts"`
 	// 给单元测试使用的超级验证码, 只在Debug=true时有效果.
 	SuperCodeForTest string `yaml:"super_code_for_test"`
+	SuperKeyForTest  string `yaml:"super_key_for_test"`
 
 	ReqDebug     bool          `yaml:"req_debug"`      //是否开启请求日志
 	ReqDebugHost string        `yaml:"req_debug_host"` //host值, 默认为: https://127.0.0.1:2021
 	ReqDebugDir  string        `yaml:"req_debug_dir"`  //目录值, 默认为: /data/logs/req_debug/
 	FdExpiretime time.Duration `yaml:"fd_expiretime"`  //文件句柄过期时间,默认为10分钟.
 
-	MySQL      *MysqlConfig       `yaml:"mysql"`       //mysql 链接配置.
-	TokenRedis *cache.RedisConfig `yaml:"token_redis"` // TOKEN
+	InviteCodeLength int `yaml:"invite_code_length"` // 生成的邀请码长度
+
+	AccountDB  *DatabaseConfig    `yaml:"account_database"` //mysql 链接配置.
+	TokenRedis *cache.RedisConfig `yaml:"token_redis"`      // TOKEN
 	SmsRedis   *cache.RedisConfig `yaml:"sms_redis"`
 
 	CORS CORS `yaml:"cors"`
@@ -100,11 +103,12 @@ func LoadConfig(configFilename string) (config *ServerConfig, err error) {
 		ReqDebugDir:  "/data/logs/req_debug/",
 		FdExpiretime: time.Minute * 10,
 
-		MySQL: &MysqlConfig{
+		AccountDB: &DatabaseConfig{
+			Dialect:      "mysql",
 			Host:         "127.0.0.1",
 			Port:         3306,
-			DBName:       "open_account",
-			User:         "open_account",
+			Database:     "openaccount",
+			User:         "openaccount",
 			Password:     "123456",
 			Debug:        true,
 			MaxOpenConns: 50,

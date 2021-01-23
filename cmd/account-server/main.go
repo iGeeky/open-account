@@ -97,7 +97,7 @@ func main() {
 		utils.BuildTime, utils.GitBranch, utils.GitCommit, utils.Datetime())
 	log.Infof(debugInfo)
 
-	db.InitDBConfig(config.MySQL.MaxOpenConns, config.MySQL.MaxIdleConns)
+	db.InitDBConfig(config.AccountDB.MaxOpenConns, config.AccountDB.MaxIdleConns)
 	apiutils.InitRedisStore(config)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 

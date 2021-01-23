@@ -18,3 +18,9 @@ type SmsLoginReq struct {
 	UserType   int32  `json:"userType"`
 	InviteCode string `json:"inviteCode"` // 邀请码.
 }
+
+// SMSCheckReq 校验验证码.
+type SMSCheckReq struct {
+	TelCodeInfo
+	BizType string `json:"bizType"`
+}

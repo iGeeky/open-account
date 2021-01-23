@@ -29,8 +29,8 @@ func APIOption(c *gin.Context) {
 // getAPIRouters 所有router注册点
 func getAPIRouters() (routers []RouterInfo) {
 	routers = []RouterInfo{
-		// {HTTP_POST, "/account/sms/check", false, TokenNone, controller.SmsCheck},
-		// {HTTP_GET, "/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
+		{HTTP_POST, "/account/sms/check", false, TokenNone, controller.SmsCheck},
+		{HTTP_GET, "/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
 		{HTTP_GET, "/account/ping", false, TokenNone, controller.APIPing},
 		{HTTP_POST, "/account/user/sms/send", false, TokenNone, controller.UserSmsSend},
 		{HTTP_POST, "/account/user/sms/login", true, TokenNone, controller.SmsLogin},
