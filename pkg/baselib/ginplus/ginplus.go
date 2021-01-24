@@ -186,14 +186,13 @@ func (c *ContextPlus) MustGetInt64(key string) (value int64) {
 	return
 }
 
-// GetPlatformVersionChannel 获取请求头中的Platform,Version, Channel相关信息.
-func (c *ContextPlus) GetPlatformVersionChannel() (platform, version, channel string) {
+// GetClientMetaInfo 获取请求头中的Platform,Version, Channel, deviceID 相关信息.
+func (c *ContextPlus) GetClientMetaInfo() (platform, version, channel, deviceID string) {
 	platform = c.GetHeader("X-OA-Platform")
 	version = c.GetHeader("X-OA-Version")
 	channel = c.GetHeader("X-OA-Channel")
-	if channel == "" {
-		channel = "Unknown"
-	}
+	deviceID = c.GetHeader("X-OA-DeviceID")
+
 	return
 }
 

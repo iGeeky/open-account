@@ -27,7 +27,7 @@ func (p Profile) Scan(input interface{}) error {
 
 // UserInfo 用户基本信息表
 type UserInfo struct {
-	ID            int64   `view:"detail,man" gorm:"primary_key;AUTO_INCREMENT"`
+	ID            int64   `view:"detail,man" json:"id" gorm:"primary_key;AUTO_INCREMENT"`
 	UID           string  `view:"*" json:"uid"`
 	Tel           string  `view:"detail,man" json:"tel"`
 	Password      string  `view:"-" json:"password"`
@@ -98,8 +98,8 @@ func (u *UserDao) GetByTel(tel string, userType int32) (user *UserInfo) {
 }
 
 // GetByUsername 按用户名查询.
-func (u *UserDao) GetByUsername(username string) (user *UserInfo) {
-	obj := u.Get("username=?", username)
+func (u *UserDao) GetByUsername(username string, userType int32) (user *UserInfo) {
+	obj := u.Get("username=? AND user_type = ?", username, userType)
 
 	if obj != nil {
 		user = obj.(*UserInfo)

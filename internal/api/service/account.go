@@ -52,7 +52,7 @@ func LoginInternal(ctx *ginplus.ContextPlus, userInfo *dao.UserInfo) {
 		return
 	}
 
-	platform, _, _ := ctx.GetPlatformVersionChannel()
+	platform, _, _, _ := ctx.GetClientMetaInfo()
 	token, err := tokenCreate(userInfo, platform)
 	if err != nil {
 		ctx.JsonFailWithMsg(errors.ErrServerError, "服务器出问题了, 请稍后再试")

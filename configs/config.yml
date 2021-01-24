@@ -7,7 +7,7 @@ check_sign: true
 debug: true
 disable_stacktrace: false
 super_key_for_test: 91af98b3bd246347f8d6eea0573ef7e7
-
+super_code_for_test: 0bce718389e18ba44fa98b9da51fc3e3
 account_database:
   dialect: mysql
   host: 127.0.0.1

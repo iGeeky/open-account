@@ -32,8 +32,12 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_POST, "/account/sms/check", false, TokenNone, controller.SmsCheck},
 		{HTTP_GET, "/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
 		{HTTP_GET, "/account/ping", false, TokenNone, controller.APIPing},
-		{HTTP_POST, "/account/user/sms/send", false, TokenNone, controller.UserSmsSend},
+		{HTTP_POST, "/account/user/sms/send", true, TokenNone, controller.UserSmsSend},
 		{HTTP_POST, "/account/user/sms/login", true, TokenNone, controller.SmsLogin},
+
+		{HTTP_GET, "/account/user/check_exist/tel", true, TokenNone, controller.UserCheckTelExist},
+		{HTTP_GET, "/account/user/check_exist/username", true, TokenNone, controller.UserCheckUsernameExist},
+		{HTTP_POST, "/account/user/register", true, TokenNone, controller.UserRegister},
 	}
 	return
 }

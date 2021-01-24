@@ -34,6 +34,10 @@ const (
 	ErrCodeInvalid string = "ERR_CODE_INVALID"
 	// ErrUserIsLocked 用户被锁定, 不能登录.
 	ErrUserIsLocked string = "ERR_USER_IS_LOCKED"
+	// ErrTelRegisted 手机号已经注册过了.
+	ErrTelRegisted string = "ERR_TEL_REGISTED"
+	// ErrUsernameRegisted 用户名已经注册过了
+	ErrUsernameRegisted string = "ERR_USERNAME_REGISTED"
 )
 
 // GetStatusCode 获取错误对应的响应码
