@@ -1,6 +1,8 @@
 package routers
 
 import (
+	"open-account/internal/api/service"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,8 +13,8 @@ const (
 	HTTP_DELETE = 4
 	HTTP_OPTION = 10
 
-	TokenNone = 0
-	TokenUser = 1
+	TokenNone = service.TokenNone
+	TokenUser = service.TokenUser
 )
 
 // RouterInfo Router信息.

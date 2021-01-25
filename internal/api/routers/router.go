@@ -38,6 +38,10 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_GET, "/account/user/check_exist/tel", true, TokenNone, controller.UserCheckTelExist},
 		{HTTP_GET, "/account/user/check_exist/username", true, TokenNone, controller.UserCheckUsernameExist},
 		{HTTP_POST, "/account/user/register", true, TokenNone, controller.UserRegister},
+
+		{HTTP_POST, "/account/user/login", true, TokenNone, controller.UserLogin},
+		{HTTP_POST, "/account/user/logout", true, TokenUser, controller.UserLogout},
+		{HTTP_GET, "/account/user/userinfo", true, TokenUser, controller.UserGetInfo},
 	}
 	return
 }
@@ -55,8 +59,7 @@ func initOneRouter(r *gin.Engine, ver string, routers []RouterInfo) {
 	optionsRouterURLs := make(map[string]bool)
 
 	for _, routerInfo := range routers {
-		// url := ver + routerInfo.URL
-
+		url := ver + routerInfo.URL
 		switch routerInfo.Op {
 		case HTTP_GET:
 			g.GET(routerInfo.URL, routerInfo.Handler)
@@ -76,6 +79,8 @@ func initOneRouter(r *gin.Engine, ver string, routers []RouterInfo) {
 			log.Errorf("Unknown http method: %d", routerInfo.Op)
 		}
 
+		// Check Token map 添加.
+		middleware.NeedTokenURLs[url] = routerInfo.CheckToken
 	}
 }
 

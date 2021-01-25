@@ -18,7 +18,6 @@ import (
 // ContextPlus 扩展的上下文.
 type ContextPlus struct {
 	*gin.Context
-	body []byte
 }
 
 // NewContetPlus 创建一个扩展上下文.
@@ -26,6 +25,25 @@ func NewContetPlus(c *gin.Context) (context *ContextPlus) {
 	context = &ContextPlus{
 		Context: c,
 	}
+	return
+}
+
+// MustGetUserID 获取用户ID,用户类型.
+func (c *ContextPlus) MustGetUserID() (userID int64, userType int32) {
+	iUserID, isExist := c.Context.Get("userID")
+	if !isExist {
+		log.Errorf("c.Get('userID') failed! maybe the 'X-OA-Token' is missing")
+		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the 'X-OA-Token' is missing"))
+	}
+
+	iUserType, isExist := c.Context.Get("userType")
+	if !isExist {
+		log.Errorf("c.Get('userType') failed! maybe the 'X-OA-Token' is missing")
+		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the 'X-OA-Token' is missing"))
+	}
+
+	userID = iUserID.(int64)
+	userType = iUserType.(int32)
 	return
 }
 
@@ -42,7 +60,10 @@ func (c *ContextPlus) GetURI() string {
 
 // GetBody 获取body内容, 多次调用时, 会使用缓存.
 func (c *ContextPlus) GetBody() (body []byte, err error) {
-	if c.body == nil {
+	var exists bool
+	var iBody interface{}
+	iBody, exists = c.Context.Get("body")
+	if !exists {
 		body = []byte("")
 		defer utils.Elapsed("ReadBody")()
 		if c.Request.Method == "POST" || c.Request.Method == "PUT" || c.Request.Method == "DELETE" {
@@ -51,10 +72,10 @@ func (c *ContextPlus) GetBody() (body []byte, err error) {
 				return
 			}
 			c.Request.Body = ioutil.NopCloser(bytes.NewReader(body))
-			c.body = body
+			c.Context.Set("body", body)
 		}
 	} else {
-		body = c.body
+		body = iBody.([]byte)
 	}
 	return
 }

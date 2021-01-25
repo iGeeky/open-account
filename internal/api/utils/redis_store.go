@@ -61,7 +61,7 @@ func TokenCheck(token string, userID int64, userType int32, platform string) (er
 
 // TokenDelete 删除Token
 func TokenDelete(userID int64, token string) (err error) {
-	key := fmt.Sprintf("tk:%d", userID)
+	key := fmt.Sprintf("tk:%s", token)
 	_, err = tokenRedis.Del(key)
 	if err != nil {
 		return

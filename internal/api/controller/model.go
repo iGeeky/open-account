@@ -37,3 +37,10 @@ type UserRegisterReq struct {
 	InviteCode string          `json:"inviteCode"` // 邀请码.
 	Profile    json.RawMessage `json:"profile"`
 }
+
+// UserLoginReq 用户密码登录请求.
+type UserLoginReq struct {
+	Tel      string `json:"tel" validate:"required,len=11"`
+	Password string `json:"password" validate:"required,len=40"` // 密码md5后的值
+	UserType int32  `json:"userType"`
+}

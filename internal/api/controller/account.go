@@ -4,6 +4,7 @@ import (
 	"open-account/configs"
 	"open-account/internal/api/dao"
 	"open-account/internal/api/service"
+	apiutils "open-account/internal/api/utils"
 	"open-account/pkg/baselib/errors"
 	"open-account/pkg/baselib/ginplus"
 	"open-account/pkg/baselib/log"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sevlyar/retag"
 )
 
 const (
@@ -166,4 +168,50 @@ func UserCheckUsernameExist(c *gin.Context) {
 	userInfo := dao.GetByUsername(username, userType)
 	exist := (userInfo != nil)
 	ctx.JsonOk(gin.H{"username": username, "userType": userType, "exist": exist})
+}
+
+// UserLogin 用户密码登录
+func UserLogin(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	var args UserLoginReq
+	ctx.ParseQueryJSONObject(&args)
+	if args.UserType == 0 {
+		args.UserType = service.UserTypeNormal
+	}
+
+	userDao := dao.NewUserDao()
+
+	userInfo := userDao.GetByTel(args.Tel, args.UserType)
+	if userInfo == nil {
+		log.Infof("user {tel: %s, userType: %d} login failed! tel not exist!", args.Tel, args.UserType)
+		ctx.JsonFail(errors.ErrTelNotExist)
+		return
+	}
+
+	// 比较密码.
+	err := utils.PwdCompare(userInfo.Password, args.Password)
+	if err != nil {
+		ctx.JsonFail(errors.ErrPasswordErr)
+		return
+	}
+
+	service.LoginInternal(ctx, userInfo)
+}
+
+// UserLogout 用户登出
+func UserLogout(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	token := c.GetHeader("X-OA-Token")
+	_ = apiutils.TokenDelete(userID, token)
+	ctx.JsonOk(gin.H{})
+}
+
+// UserGetInfo 获取用户基本信息.
+func UserGetInfo(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	dao := dao.NewUserDao()
+	userInfo := retag.Convert(dao.MustGetByID(userID), retag.NewView("json", "detail"))
+	ctx.JsonOk(gin.H{"userInfo": userInfo})
 }
