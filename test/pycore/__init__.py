@@ -1,7 +1,8 @@
 import logging
 import os
+from copy import deepcopy
 
-log_level = os.environ.get('LOG_LEVEL')
+log_level = os.environ.get('LOG_LEVEL', 'ERROR') # INFO,WARN,ERROR
 if log_level:
     logging.basicConfig(level=log_level, format="%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s")
 
@@ -44,4 +45,9 @@ class AccountTest(HttpTest):
 
     def getDefaultHeaders(self):
         headers = {}
-        return headers
+        headers["X-OA-Channel"] = "xiaomi" # app分发渠道
+        headers["X-OA-Platform"] = "test"  # app平台:android/ios/h5/xxx
+        headers["X-OA-Version"] = "0.1.290" # app的版本.
+        headers["X-OA-DeviceID"] = "test-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
+        headers["X-OA-AppID"] = "open-account"
+        return deepcopy(headers)

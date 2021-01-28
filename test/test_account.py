@@ -3,7 +3,7 @@ import time
 import json
 import unittest
 from pycore import AccountTest, random_tel, random_username
-from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema
+from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema, get_userinfo_schema
 from pycore.schema_gen import set_schema_enums
 
 def get_check_tel_exist_schema(enums={}):
@@ -163,6 +163,109 @@ class TestAccount(AccountTest):
         schema = get_user_login_schema()
         res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
 
-    # 注册邀请码
-    # 设置Profile
-    # TOKEN 使用.
+    def test_user_register_with_invite_code(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        inviteCode = "test-invite-code"
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "inviteCode": inviteCode,
+        }
+        schema = get_user_login_schema(enums={"regInviteCode": inviteCode})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+
+
+    def test_user_get_userinfo_failed_token_missing(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        inviteCode = "test-invite-code"
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "inviteCode": inviteCode,
+        }
+        schema = get_user_login_schema(enums={"regInviteCode": inviteCode})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        schema = get_fail_schema('ERR_TOKEN_INVALID')
+        res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=401, schema=schema)
+
+    def test_user_get_userinfo_failed_token_invlid(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        inviteCode = "test-invite-code"
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "inviteCode": inviteCode,
+        }
+        schema = get_user_login_schema(enums={"regInviteCode": inviteCode})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+
+        headers["X-OA-Token"] = "TOKEN-INVALID"
+        schema = get_fail_schema('ERR_TOKEN_INVALID')
+        res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=401, schema=schema)
+
+    def test_user_get_set_userinfo_success(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        inviteCode = "test-invite-code"
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "inviteCode": inviteCode,
+            "profile": {"id": "test01", "city": "sz"} # 字段需要在服务器端定义
+        }
+        schema = get_user_login_schema(enums={"regInviteCode": inviteCode})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+        schema = get_userinfo_schema(enums={"tel": tel, "username": username, "regInviteCode": inviteCode})
+        res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=200, schema=schema)
+
+        # 设置用户信息
+        body = {
+            "avatar": "https://avatars.githubusercontent.com/u/57409417?s=460&u=1fff104b9010d84a47ecf12c5abce96436fc7b8b&v=4",
+            "nickname": "igeeky",
+            "sex": 1,
+            "birthday": "2021-01-18",
+        }
+        schema = get_userinfo_schema(enums=body)
+        res = self.http_put(url='/v1/account/user/userinfo', headers=headers, body=body, status=200, schema=schema)
+
+
+    def test_user_logout(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+        }
+        schema = get_user_login_schema()
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+        schema = get_ok_schema()
+        body = {}
+        res = self.http_post(url='/v1/account/user/logout', headers=headers, body=body, status=200, schema=schema)
+
+        # 第二次logout失败.
+        schema = get_fail_schema('ERR_TOKEN_EXPIRED')
+        res = self.http_post(url='/v1/account/user/logout', headers=headers, body=body, status=401, schema=schema)
+

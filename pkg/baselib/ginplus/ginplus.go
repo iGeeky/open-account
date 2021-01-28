@@ -226,29 +226,24 @@ func (c *ContextPlus) JsonOk(data interface{}) gin.H {
 
 // JsonOk 返回成功及reason, data节点
 func (c *ContextPlus) JsonOk2(reason string, data interface{}) gin.H {
+	status := errors.GetStatusCode(reason)
 	response := gin.H{"ok": true, "reason": reason, "data": data}
-	c.JSON(200, response)
+	c.JSON(status, response)
 	return response
 }
 
 // JsonFail 返回失败及reason节点
 func (c *ContextPlus) JsonFail(reason string) gin.H {
+	status := errors.GetStatusCode(reason)
 	response := gin.H{"ok": false, "reason": reason}
-	if reason == errors.ErrServerError {
-		c.JSON(500, response)
-	} else {
-		c.JSON(200, response)
-	}
+	c.JSON(status, response)
 	return response
 }
 
 // JsonFailWithMsg 返回失败及reason,errmsg节点
 func (c *ContextPlus) JsonFailWithMsg(reason string, errmsg interface{}) gin.H {
+	status := errors.GetStatusCode(reason)
 	response := gin.H{"ok": false, "reason": reason, "errmsg": errmsg}
-	if reason == errors.ErrServerError {
-		c.JSON(500, response)
-	} else {
-		c.JSON(200, response)
-	}
+	c.JSON(status, response)
 	return response
 }

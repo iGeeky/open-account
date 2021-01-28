@@ -13,6 +13,7 @@ import hashlib
 import sys
 import socket
 import time
+import json
 import logging
 log = logging.getLogger("httpclient")
 
@@ -66,6 +67,8 @@ def headerstr(headers):
 
 
 def GetDebugStr(method, url, args, headers, body, timeout):
+    if type(body) == dict:
+        body = json.dumps(body)
     req_debug = ""
     if args:
         query = urlencode(args).encode(encoding='utf-8',errors='ignore')
@@ -127,7 +130,7 @@ def HttpReq(method, url, headers, args, body, timeout):
     res.duration = duration
 
     if res.status >= 400:
-        log.error("FAIL REQUEST [ %s ] status: %s, duration: %.3f body: %s", req_debug, res.status, duration, res.body)
+        log.warning("FAIL REQUEST [ %s ] status: %s, duration: %.3f body: %s", req_debug, res.status, duration, res.body)
     else:
         log.info ("REQUEST [ %s ] status: %s, duration: %.3f", req_debug, res.status, duration)
     res.req_debug = req_debug

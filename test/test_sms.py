@@ -47,7 +47,7 @@ class TestSMS(AccountTest):
             "key": "91af98b3bd246347f8d6eea0573ef7e7"
         }
         schema = get_sms_code_schema()
-        res = self.http_get(url='/v1/account/sms/get/code', args=args, status=200, schema=schema)
+        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
         code = res.json["data"]["code"]
 
         # 验证码登录.

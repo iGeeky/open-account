@@ -215,3 +215,29 @@ func UserGetInfo(c *gin.Context) {
 	userInfo := retag.Convert(dao.MustGetByID(userID), retag.NewView("json", "detail"))
 	ctx.JsonOk(gin.H{"userInfo": userInfo})
 }
+
+// UserSetInfo 设置用户基本信息
+func UserSetInfo(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	var args UserSetInfoReq
+	ctx.ParseQueryJSONObject(&args)
+
+	dao := dao.NewUserDao()
+	userInfo := dao.MustGetByID(userID)
+	if args.Avatar != "" {
+		userInfo.Avatar = args.Avatar
+	}
+	if args.Nickname != "" {
+		userInfo.Nickname = args.Nickname
+	}
+	if args.Sex != 0 {
+		userInfo.Sex = args.Sex
+	}
+	if args.Birthday != "" {
+		userInfo.Birthday = args.Birthday
+	}
+	dao.UpdateBy(userInfo, "id = ?", userID)
+
+	ctx.JsonOk(gin.H{"userInfo": retag.Convert(userInfo, retag.NewView("json", "detail"))})
+}

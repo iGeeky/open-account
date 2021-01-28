@@ -1,9 +1,5 @@
 package errors
 
-import (
-	"open-account/pkg/baselib/log"
-)
-
 // Assert 如果err不为空, 抛出ERR_SERVER_ERROR错误.
 func Assert(err error) {
 	if err != nil {
@@ -47,15 +43,15 @@ const (
 // GetStatusCode 获取错误对应的响应码
 func GetStatusCode(reason string) int {
 	switch reason {
-	case ErrArgsInvalid:
+	case ErrArgsInvalid, ErrArgsMissing:
 		return 400
-	case ErrSignError, ErrTokenInvalid:
+	case ErrSignError, ErrTokenInvalid, ErrTokenExpired, ErrTokenOfflined:
 		return 401
 	case ErrServerError:
 		return 500
 	default:
-		log.Errorf("Unknown Reason: %s", reason)
-		return 500
+		// log.Errorf("Unknown Reason: %s", reason)
+		return 200
 	}
 }
 

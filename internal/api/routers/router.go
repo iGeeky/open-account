@@ -29,9 +29,10 @@ func APIOption(c *gin.Context) {
 // getAPIRouters 所有router注册点
 func getAPIRouters() (routers []RouterInfo) {
 	routers = []RouterInfo{
-		{HTTP_POST, "/account/sms/check", false, TokenNone, controller.SmsCheck},
-		{HTTP_GET, "/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
-		{HTTP_GET, "/account/ping", false, TokenNone, controller.APIPing},
+		{HTTP_POST, "/man/account/sms/check", false, TokenNone, controller.SmsCheck},
+		{HTTP_GET, "/man/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
+		{HTTP_GET, "/man/account/ping", false, TokenNone, controller.APIPing},
+
 		{HTTP_POST, "/account/user/sms/send", true, TokenNone, controller.UserSmsSend},
 		{HTTP_POST, "/account/user/sms/login", true, TokenNone, controller.SmsLogin},
 
@@ -42,6 +43,7 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_POST, "/account/user/login", true, TokenNone, controller.UserLogin},
 		{HTTP_POST, "/account/user/logout", true, TokenUser, controller.UserLogout},
 		{HTTP_GET, "/account/user/userinfo", true, TokenUser, controller.UserGetInfo},
+		{HTTP_PUT, "/account/user/userinfo", true, TokenUser, controller.UserSetInfo},
 	}
 	return
 }
@@ -125,6 +127,7 @@ func InitRouter(config *configs.ServerConfig) *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(CorsHeader)
 	r.Use(middleware.PanicHandler)
+	r.Use(middleware.TokenCheckFilter)
 
 	initOneRouter(r, "/v1", getAPIRouters())
 	return r

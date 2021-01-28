@@ -9,10 +9,10 @@ import (
 	"open-account/pkg/baselib/utils"
 )
 
-// Profile 个人信息
+// Profile 个人信息, 需要先在Profile类中定义相应的字段.
 type Profile struct {
-	id   string
-	addr string
+	ID   string `json:"id"`
+	City string `json:"city"`
 }
 
 // Value 实现方法
@@ -21,8 +21,10 @@ func (p Profile) Value() (driver.Value, error) {
 }
 
 // Scan 实现方法
-func (p Profile) Scan(input interface{}) error {
-	return json.Unmarshal(input.([]byte), &p)
+func (p *Profile) Scan(input interface{}) (err error) {
+	buf := input.([]byte)
+	err = json.Unmarshal(buf, p)
+	return
 }
 
 // UserInfo 用户基本信息表

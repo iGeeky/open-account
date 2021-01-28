@@ -44,3 +44,11 @@ type UserLoginReq struct {
 	Password string `json:"password" validate:"required,len=40"` // 密码md5后的值
 	UserType int32  `json:"userType"`
 }
+
+// UserSetInfoReq 设置用户基本信息.
+type UserSetInfoReq struct {
+	Avatar   string `json:"avatar"`   //头像URL
+	Nickname string `json:"nickname"` //用户名
+	Sex      int16  `json:"sex"`      //个人签名/简介
+	Birthday string `json:"birthday"`
+}

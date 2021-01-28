@@ -1,4 +1,4 @@
-
+from pycore.schema_gen import set_schema_enums
 
 def get_ok_schema(data_schema={"type": "object" }):
     schema = {
@@ -24,7 +24,7 @@ def get_fail_schema(reason=""):
     }
     return schema
 
-def get_userinfo_detail_schema():
+def get_userinfo_detail_schema(enums=None):
     schema = {
         "type": "object",
         "properties": {
@@ -42,17 +42,30 @@ def get_userinfo_detail_schema():
         },
         "required": [ "id", "uid", "tel", "nickname", "avatar", "sex", "birthday", "userType", "regInviteCode", "inviteCode", "createTime"]
     }
+    if enums:
+        set_schema_enums(schema['properties'], enums)
     return schema
 
 
-def get_user_login_schema():
+def get_user_login_schema(enums=None):
     data_schema = {
         "type": "object",
         "properties": {
             "token": { "type": "string" },
-            "userInfo": get_userinfo_detail_schema()
+            "userInfo": get_userinfo_detail_schema(enums=enums)
         },
         "required": [ "token", "userInfo" ]
+    }
+    schema = get_ok_schema(data_schema)
+    return schema
+
+def get_userinfo_schema(enums=None):
+    data_schema = {
+        "type": "object",
+        "properties": {
+            "userInfo": get_userinfo_detail_schema(enums=enums)
+        },
+        "required": ["userInfo" ]
     }
     schema = get_ok_schema(data_schema)
     return schema
