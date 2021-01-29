@@ -3,7 +3,7 @@ import time
 import json
 import unittest
 from pycore import AccountTest, random_tel, random_username
-from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema, get_userinfo_schema
+from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema, get_userinfo_schema, get_sms_code_schema
 from pycore.schema_gen import set_schema_enums
 
 def get_check_tel_exist_schema(enums={}):
@@ -268,4 +268,284 @@ class TestAccount(AccountTest):
         # 第二次logout失败.
         schema = get_fail_schema('ERR_TOKEN_EXPIRED')
         res = self.http_post(url='/v1/account/user/logout', headers=headers, body=body, status=401, schema=schema)
+
+    def test_user_register_empty_password(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        emptyPassword = self.encodePassword("empty-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+
+        body = {
+            "tel": tel,
+            "password": emptyPassword,
+        }
+        schema = get_fail_schema('ERR_PASSWORD_ERR')
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_register_login_success(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        password = self.encodePassword("password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": password,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+
+        body = {
+            "tel": tel,
+            "password": password,
+        }
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_register_login_failed(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        password = self.encodePassword("password")
+        errPassword = self.encodePassword("err-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": password,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+
+        body = {
+            "tel": tel,
+            "password": errPassword,
+        }
+        schema = get_fail_schema('ERR_PASSWORD_ERR')
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_change_pwd_failed_old_pwd_error(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        oldPassword = self.encodePassword("old-password")
+        newPassword = self.encodePassword("new-password")
+        errPassword = self.encodePassword("err-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": oldPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+
+        body = {
+            "oldPassword": errPassword,
+            "password": newPassword,
+        }
+        schema = get_fail_schema('ERR_PASSWORD_ERR')
+        res = self.http_put(url="/v1/account/user/password", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_change_pwd_success(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        oldPassword = self.encodePassword("old-password")
+        newPassword = self.encodePassword("new-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": oldPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+
+        # 修改密码
+        body = {
+            "oldPassword": oldPassword,
+            "password": newPassword,
+        }
+        schema = get_ok_schema()
+        res = self.http_put(url="/v1/account/user/password", headers=headers, body=body, status=200, schema=schema)
+
+        # 使用旧密码登录失败
+        body = {
+            "tel": tel,
+            "password": oldPassword,
+        }
+        schema = get_fail_schema('ERR_PASSWORD_ERR')
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+        # 使用新密码登录成功
+        body = {
+            "tel": tel,
+            "password": newPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_reset_pwd_failed_sms_code_invalid(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        oldPassword = self.encodePassword("old-password")
+        newPassword = self.encodePassword("new-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": oldPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+
+        # 发送验证码
+        body = {
+            "tel": tel,
+            "bizType": "login",
+        }
+        schema = get_ok_schema()
+        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=schema)
+
+        # 通过后门接口, 查询验证码.
+        args = {
+            "bizType": "login",
+            "tel": tel,
+            "key": AccountTest.SUPER_KEY
+        }
+        schema = get_sms_code_schema()
+        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        code = res.json["data"]["code"]
+
+        # 重置密码, 验证码类型错误
+        body = {
+            "tel": tel,
+            "code": code,
+            "password": newPassword,
+        }
+        schema = get_fail_schema('ERR_CODE_INVALID')
+        res = self.http_put(url="/v1/account/user/password/reset", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_reset_pwd_failed_tel_not_exist(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        oldPassword = self.encodePassword("old-password")
+        newPassword = self.encodePassword("new-password")
+
+        # 发送验证码
+        body = {
+            "tel": tel,
+            "bizType": "resetPwd",
+        }
+        schema = get_ok_schema()
+        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=schema)
+
+        # 通过后门接口, 查询验证码.
+        args = {
+            "bizType": "resetPwd",
+            "tel": tel,
+            "key": AccountTest.SUPER_KEY
+        }
+        schema = get_sms_code_schema()
+        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        code = res.json["data"]["code"]
+
+        # 重置密码, 手机号不存在
+        body = {
+            "tel": tel,
+            "code": code,
+            "password": newPassword,
+        }
+        schema = get_fail_schema('ERR_TEL_NOT_EXIST')
+        res = self.http_put(url="/v1/account/user/password/reset", headers=headers, body=body, status=200, schema=schema)
+
+    def test_user_reset_pwd_success(self):
+        tel = random_tel()
+        username = random_username()
+        headers = self.getDefaultHeaders()
+        oldPassword = self.encodePassword("old-password")
+        newPassword = self.encodePassword("new-password")
+
+        body = {
+            "tel": tel,
+            "code": self.SUPER_TEST_CODE,
+            "username": username,
+            "userType": 1,
+            "password": oldPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url='/v1/account/user/register', headers=headers, body=body, status=200, schema=schema)
+        token = res.json["data"]["token"]
+        headers["X-OA-Token"] = token
+
+        # 发送验证码
+        body = {
+            "tel": tel,
+            "bizType": "resetPwd",
+        }
+        schema = get_ok_schema()
+        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=schema)
+
+        # 通过后门接口, 查询验证码.
+        args = {
+            "bizType": "resetPwd",
+            "tel": tel,
+            "key": AccountTest.SUPER_KEY
+        }
+        schema = get_sms_code_schema()
+        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        code = res.json["data"]["code"]
+
+        # 重置密码
+        body = {
+            "tel": tel,
+            "code": code,
+            "password": newPassword,
+        }
+        schema = get_ok_schema()
+        res = self.http_put(url="/v1/account/user/password/reset", headers=headers, body=body, status=200, schema=schema)
+
+        # 使用旧密码登录失败
+        body = {
+            "tel": tel,
+            "password": oldPassword,
+        }
+        schema = get_fail_schema('ERR_PASSWORD_ERR')
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
+        # 使用新密码登录成功
+        body = {
+            "tel": tel,
+            "password": newPassword,
+        }
+        schema = get_user_login_schema(enums={})
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
 

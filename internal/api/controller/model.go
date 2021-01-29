@@ -52,3 +52,21 @@ type UserSetInfoReq struct {
 	Sex      int16  `json:"sex"`      //个人签名/简介
 	Birthday string `json:"birthday"`
 }
+
+// UserChangePasswordReq 用户修改密码
+type UserChangePasswordReq struct {
+	OldPassword string `json:"oldPassword" validate:"required,len=40"` // 旧的密码(hash后)
+	Password    string `json:"password" validate:"required,len=40"`    // 密码sha1后的值
+}
+
+// UserResetPasswordReq 用户重置密码.
+type UserResetPasswordReq struct {
+	TelCodeInfo
+	Password string `json:"password" validate:"required,len=40"` // 密码sha1后的值
+	UserType int32  `json:"userType"`
+}
+
+// SetInviteCodeReq 设置注册邀请码
+type SetInviteCodeReq struct {
+	InviteCode string `json:"inviteCode" validate:"required"`
+}

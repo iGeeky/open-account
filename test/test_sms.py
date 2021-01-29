@@ -3,22 +3,8 @@ import time
 import json
 import unittest
 from pycore import AccountTest, random_tel
-from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema
+from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema, get_sms_code_schema
 
-def get_sms_code_schema():
-    data_schema = {
-        "type": "object",
-        "properties": {
-            "code": {
-                "type": "string"
-            }
-        },
-        "required": [
-            "code"
-        ]
-    }
-    schema = get_ok_schema(data_schema)
-    return schema
 
 class TestSMS(AccountTest):
     TIMEOUT = 60
@@ -38,13 +24,13 @@ class TestSMS(AccountTest):
         body = {
             "tel": self.tel,
         }
-        schema = get_sms_code_schema()
-        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=get_ok_schema())
+        schema = get_ok_schema()
+        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=schema)
         # 通过后门接口, 查询验证码.
         args = {
             "bizType": "login",
             "tel": self.tel,
-            "key": "91af98b3bd246347f8d6eea0573ef7e7"
+            "key": AccountTest.SUPER_KEY
         }
         schema = get_sms_code_schema()
         res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)

@@ -38,6 +38,8 @@ const (
 	ErrTelNotExist string = "ERR_TEL_NOT_EXIST"
 	// ErrPasswordErr 密码错误
 	ErrPasswordErr string = "ERR_PASSWORD_ERR"
+	// ErrInviteCodeInvalid 邀请码不合法
+	ErrInviteCodeInvalid string = "ERR_INVITE_CODE_INVALID"
 )
 
 // GetStatusCode 获取错误对应的响应码

@@ -69,3 +69,18 @@ def get_userinfo_schema(enums=None):
     }
     schema = get_ok_schema(data_schema)
     return schema
+
+def get_sms_code_schema():
+    data_schema = {
+        "type": "object",
+        "properties": {
+            "code": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "code"
+        ]
+    }
+    schema = get_ok_schema(data_schema)
+    return schema

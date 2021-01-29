@@ -63,6 +63,8 @@ type ServerConfig struct {
 	SuperCodeForTest string `yaml:"super_code_for_test"`
 	SuperKeyForTest  string `yaml:"super_key_for_test"`
 
+	InviteCodeSettingPeriod time.Duration `yaml:"invite_code_setting_period"`
+
 	ReqDebug     bool          `yaml:"req_debug"`      //是否开启请求日志
 	ReqDebugHost string        `yaml:"req_debug_host"` //host值, 默认为: https://127.0.0.1:2021
 	ReqDebugDir  string        `yaml:"req_debug_dir"`  //目录值, 默认为: /data/logs/req_debug/
@@ -102,6 +104,8 @@ func LoadConfig(configFilename string) (config *ServerConfig, err error) {
 		ReqDebugHost: "http://127.0.0.1:2021",
 		ReqDebugDir:  "/data/logs/req_debug/",
 		FdExpiretime: time.Minute * 10,
+
+		InviteCodeSettingPeriod: time.Hour * 24 * 7, // 默认7天内可设置邀请码.
 
 		AccountDB: &DatabaseConfig{
 			Dialect:      "mysql",

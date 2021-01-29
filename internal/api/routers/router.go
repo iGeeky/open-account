@@ -44,6 +44,10 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_POST, "/account/user/logout", true, TokenUser, controller.UserLogout},
 		{HTTP_GET, "/account/user/userinfo", true, TokenUser, controller.UserGetInfo},
 		{HTTP_PUT, "/account/user/userinfo", true, TokenUser, controller.UserSetInfo},
+		{HTTP_PUT, "/account/user/password", true, TokenUser, controller.UserChangePassword},
+		{HTTP_PUT, "/account/user/password/reset", true, TokenNone, controller.UserResetPassword},
+		{HTTP_GET, "/account/user/invite_code/settable", true, TokenUser, controller.InviteCodeSettable},
+		{HTTP_PUT, "/account//user/invite_code", true, TokenUser, controller.SetInviteCode},
 	}
 	return
 }

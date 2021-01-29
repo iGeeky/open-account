@@ -19,6 +19,8 @@ import (
 const (
 	// LoginBizType 登录的bizType=login
 	LoginBizType = "login"
+	// ResetPwdBizType = "resetPwd"
+	ResetPwdBizType = "resetPwd"
 )
 
 // SmsLogin 短信登录.
@@ -240,4 +242,102 @@ func UserSetInfo(c *gin.Context) {
 	dao.UpdateBy(userInfo, "id = ?", userID)
 
 	ctx.JsonOk(gin.H{"userInfo": retag.Convert(userInfo, retag.NewView("json", "detail"))})
+}
+
+// UserChangePassword 用户修改密码
+func UserChangePassword(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	var args UserChangePasswordReq
+	ctx.ParseQueryJSONObject(&args)
+
+	userDao := dao.NewUserDao()
+	userInfo := userDao.MustGetByID(userID)
+
+	// verify old password
+	err := utils.PwdCompare(userInfo.Password, args.OldPassword)
+	if err != nil {
+		ctx.JsonFail(errors.ErrPasswordErr)
+		return
+	}
+
+	encodePassword := utils.MustPwdEncode(args.Password)
+	userDao.SetPassword(userInfo.ID, encodePassword)
+
+	ctx.JsonOk(gin.H{})
+}
+
+// UserResetPassword 用户重置密码.
+func UserResetPassword(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	var args UserResetPasswordReq
+	ctx.ParseQueryJSONObject(&args)
+	service.CheckTelSmsCode(ctx, ResetPwdBizType, args.Tel, args.Code)
+
+	if args.UserType == 0 {
+		args.UserType = service.UserTypeNormal
+	}
+
+	userDao := dao.NewUserDao()
+	// check tel, username exist
+	userInfo := userDao.GetByTel(args.Tel, args.UserType)
+	if userInfo == nil {
+		log.Infof("Tel [%s, type: %d] is not exist!", args.Tel, args.UserType)
+		ctx.JsonFail(errors.ErrTelNotExist)
+		return
+	}
+
+	encodePassword := utils.MustPwdEncode(args.Password)
+	userDao.SetPassword(userInfo.ID, encodePassword)
+
+	service.LoginInternal(ctx, userInfo)
+}
+
+// InviteCodeSettable 检查是否可以设置邀请码.
+func InviteCodeSettable(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	var settable = true
+	userID, _ := ctx.MustGetUserID()
+	userDao := dao.NewUserDao()
+	userInfo := userDao.MustGetByID(userID)
+	if (utils.Now() - userInfo.CreateTime) > int64(configs.Config.InviteCodeSettingPeriod.Seconds()) { //注册时间超过设置的限制.
+		settable = false
+	} else if userInfo.RegInviteCode != "" { // 已经设置
+		settable = false
+	}
+
+	ctx.JsonOk(gin.H{"settable": settable})
+}
+
+// SetInviteCode 设置注册邀请码.
+func SetInviteCode(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	var args SetInviteCodeReq
+	ctx.ParseQueryJSONObject(&args)
+	userDao := dao.NewUserDao()
+	userInfo := userDao.MustGetByID(userID)
+	if userInfo.RegInviteCode != "" { //注册邀请码 已经设置过.
+		ctx.JsonOk(gin.H{})
+		return
+	}
+	args.InviteCode = strings.ToLower(args.InviteCode)
+
+	inviteUserInfo := userDao.GetByInviteCode(args.InviteCode)
+	if inviteUserInfo == nil {
+		log.Errorf("user %s(%d) input a invite invite code: %s", userInfo.Username, userInfo.ID, args.InviteCode)
+		ctx.JsonFail(errors.ErrInviteCodeInvalid)
+		return
+	}
+
+	// 不能使用自己的注册码.
+	if inviteUserInfo.ID == userInfo.ID {
+		log.Infof("User %s(%d) used his own inviteCode", userInfo.Username, userInfo.ID)
+		ctx.JsonFailWithMsg(errors.ErrInviteCodeInvalid, "不能使用自己的邀请码")
+		return
+	}
+
+	userDao.SetRegInviteCode(userID, args.InviteCode)
+
+	ctx.JsonOk(gin.H{})
 }

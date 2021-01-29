@@ -1,5 +1,6 @@
 import logging
 import os
+import hashlib
 from copy import deepcopy
 
 log_level = os.environ.get('LOG_LEVEL', 'ERROR') # INFO,WARN,ERROR
@@ -42,6 +43,7 @@ def random_username():
 
 class AccountTest(HttpTest):
     SUPER_TEST_CODE = "0bce718389e18ba44fa98b9da51fc3e3"
+    SUPER_KEY = "91af98b3bd246347f8d6eea0573ef7e7"
 
     def getDefaultHeaders(self):
         headers = {}
@@ -51,3 +53,7 @@ class AccountTest(HttpTest):
         headers["X-OA-DeviceID"] = "test-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
         headers["X-OA-AppID"] = "open-account"
         return deepcopy(headers)
+
+    def encodePassword(self, password):
+        # 密码加密方式, 需要客户端统一就可以.
+        return hashlib.sha1(password.encode("utf8")).hexdigest()
