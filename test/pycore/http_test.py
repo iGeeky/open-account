@@ -240,3 +240,17 @@ class HttpTest(unittest.TestCase):
         """
         return self.http(method='PUT', **kwargs)
 
+    def http_delete(self, **kwargs):
+        """
+        ### request options:
+
+        - url: request url
+        - headers: request headers
+        - body: request body for post/put/delete request
+        - status: expect response status, default is 200.
+        - schema: expect response body schema for restful response
+        - match: regex pattern for matching response body.
+        - notMatch: regex pattern for not matching response body.
+        """
+        return self.http(method='DELETE', **kwargs)
+

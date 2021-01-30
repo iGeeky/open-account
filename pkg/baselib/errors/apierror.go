@@ -40,6 +40,8 @@ const (
 	ErrPasswordErr string = "ERR_PASSWORD_ERR"
 	// ErrInviteCodeInvalid 邀请码不合法
 	ErrInviteCodeInvalid string = "ERR_INVITE_CODE_INVALID"
+	// ErrUserHaveUsername 用户已经有用户名了, 不能再设置.
+	ErrUserHaveUsername string = "ERR_USER_HAVE_USERNAME"
 )
 
 // GetStatusCode 获取错误对应的响应码

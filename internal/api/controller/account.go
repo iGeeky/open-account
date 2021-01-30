@@ -244,6 +244,26 @@ func UserSetInfo(c *gin.Context) {
 	ctx.JsonOk(gin.H{"userInfo": retag.Convert(userInfo, retag.NewView("json", "detail"))})
 }
 
+// UserSetName 设置用户名
+func UserSetName(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	userID, _ := ctx.MustGetUserID()
+	var args UserSetNameReq
+	ctx.ParseQueryJSONObject(&args)
+
+	dao := dao.NewUserDao()
+	userInfo := dao.MustGetByID(userID)
+	if userInfo.Username != "" {
+		log.Infof("user {tel: %s, userType: %d} already has a username and cannot be set again!", userInfo.Tel, userInfo.UserType)
+		ctx.JsonFail(errors.ErrUserHaveUsername)
+		return
+	}
+
+	dao.SetUsername(userID, args.Username)
+
+	ctx.JsonOk(gin.H{})
+}
+
 // UserChangePassword 用户修改密码
 func UserChangePassword(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)

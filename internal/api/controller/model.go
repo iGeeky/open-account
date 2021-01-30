@@ -2,6 +2,18 @@ package controller
 
 import "encoding/json"
 
+// ManagerUserResetPwdReq 用户重置密码
+type ManagerUserResetPwdReq struct {
+	Tel      string `json:"tel" validate:"required,len=11"`
+	Password string `json:"password" validate:"required"` // 密码md5后的值
+	UserType int32  `json:"userType"`
+}
+
+// ManagerUserDeRegisterReq 删除用户.
+type ManagerUserDeRegisterReq struct {
+	ID int64 `json:"id"`
+}
+
 // UserSmsSendReq 用户发送短信请求结构
 type UserSmsSendReq struct {
 	BizType string `json:"bizType"`
@@ -51,6 +63,11 @@ type UserSetInfoReq struct {
 	Nickname string `json:"nickname"` //用户名
 	Sex      int16  `json:"sex"`      //个人签名/简介
 	Birthday string `json:"birthday"`
+}
+
+// UserSetNameReq 设置用户名(用于登录)
+type UserSetNameReq struct {
+	Username string `json:"username" validate:"required"` //用户名
 }
 
 // UserChangePasswordReq 用户修改密码

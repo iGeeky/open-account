@@ -13,8 +13,9 @@ const (
 	HTTP_DELETE = 4
 	HTTP_OPTION = 10
 
-	TokenNone = service.TokenNone
-	TokenUser = service.TokenUser
+	TokenNone  = service.TokenNone
+	TokenUser  = service.TokenUser
+	TokenAdmin = service.TokenAdmin
 )
 
 // RouterInfo Router信息.

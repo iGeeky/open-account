@@ -29,9 +29,11 @@ func APIOption(c *gin.Context) {
 // getAPIRouters 所有router注册点
 func getAPIRouters() (routers []RouterInfo) {
 	routers = []RouterInfo{
-		{HTTP_POST, "/man/account/sms/check", false, TokenNone, controller.SmsCheck},
+		{HTTP_POST, "/man/account/sms/check", false, TokenAdmin, controller.SmsCheck},
 		{HTTP_GET, "/man/account/sms/get/code", false, TokenNone, controller.SmsGetCode},
 		{HTTP_GET, "/man/account/ping", false, TokenNone, controller.APIPing},
+		{HTTP_PUT, "/man/account/user/password/reset", false, TokenAdmin, controller.ManagerUserPasswordReset},
+		{HTTP_DELETE, "/man/account/user/deregister", false, TokenAdmin, controller.ManagerUserDeRegister},
 
 		{HTTP_POST, "/account/user/sms/send", true, TokenNone, controller.UserSmsSend},
 		{HTTP_POST, "/account/user/sms/login", true, TokenNone, controller.SmsLogin},
@@ -44,10 +46,11 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_POST, "/account/user/logout", true, TokenUser, controller.UserLogout},
 		{HTTP_GET, "/account/user/userinfo", true, TokenUser, controller.UserGetInfo},
 		{HTTP_PUT, "/account/user/userinfo", true, TokenUser, controller.UserSetInfo},
+		{HTTP_PUT, "/account/user/username", true, TokenUser, controller.UserSetName},
 		{HTTP_PUT, "/account/user/password", true, TokenUser, controller.UserChangePassword},
 		{HTTP_PUT, "/account/user/password/reset", true, TokenNone, controller.UserResetPassword},
 		{HTTP_GET, "/account/user/invite_code/settable", true, TokenUser, controller.InviteCodeSettable},
-		{HTTP_PUT, "/account//user/invite_code", true, TokenUser, controller.SetInviteCode},
+		{HTTP_PUT, "/account/user/invite_code", true, TokenUser, controller.SetInviteCode},
 	}
 	return
 }

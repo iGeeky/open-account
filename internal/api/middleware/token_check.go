@@ -80,11 +80,18 @@ func tokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 
 	// 检查用户状态
 	userDao := dao.NewUserDao()
-	userInfo := userDao.MustGetByID(tokenInfo.UserID)
+	userInfo := userDao.GetByID(tokenInfo.UserID)
+	if userInfo == nil { // 用户被管理在后台注销了.
+		log.Errorf("userDao.GetByID(%d) failed! 账号[%d]被注销了", tokenInfo.UserID, tokenInfo.UserID)
+		ctx.JsonFailWithMsg(errors.ErrTokenExpired, "账号已被注销, 请联系客服")
+		ctx.Abort()
+		return false
+	}
 	if userInfo.Status == service.UserStatusDisabled {
 		log.Errorf("CheckToken(%s) failed! 账号 %d:%s 已被冻结", token, userInfo.ID, userInfo.Tel)
-		ctx.JsonFailWithMsg(errors.ErrUserIsLocked, "账号被冻结, 请联系客服")
+		ctx.JsonFailWithMsg(errors.ErrUserIsLocked, "账号已被冻结, 请联系客服")
 		ctx.Abort()
+		return false
 	}
 
 	ctx.Context.Set("userID", tokenInfo.UserID)

@@ -1,8 +1,9 @@
 package service
 
 const (
-	TokenNone = 0
-	TokenUser = 1
+	TokenNone  = 0 //不验证Token
+	TokenUser  = 1 //验证客户端登录Token
+	TokenAdmin = 2 //管理后台使用配置的超级Token.
 
 	UserSexUnknown   = int16(0)
 	UserSexMale      = int16(1)

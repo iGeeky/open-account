@@ -118,6 +118,15 @@ func (u *UserDao) GetByInviteCode(inviteCode string) (user *UserInfo) {
 	return
 }
 
+// GetByID 按ID查询
+func (u *UserDao) GetByID(id int64) (user *UserInfo) {
+	obj := u.Get("id=?", id)
+	if obj != nil {
+		user = obj.(*UserInfo)
+	}
+	return
+}
+
 // MustGetByID 按ID查询,不存在会panic
 func (u *UserDao) MustGetByID(id int64) (user *UserInfo) {
 	obj := u.MustGet("id=?", id)
@@ -157,6 +166,14 @@ func (u *UserDao) SetPassword(id int64, password string) {
 	now := utils.Now()
 	update := map[string]interface{}{"password": password, "update_time": now}
 	log.Infof("SetPassword(id: %d, password: %s)...", id, password)
+	u.UpdateBy(update, "id = ?", id)
+}
+
+// SetUsername 设置密码.
+func (u *UserDao) SetUsername(id int64, username string) {
+	now := utils.Now()
+	update := map[string]interface{}{"username": username, "update_time": now}
+	log.Infof("SetUsername(id: %d, username: %s)...", id, username)
 	u.UpdateBy(update, "id = ?", id)
 }
 
