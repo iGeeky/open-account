@@ -14,6 +14,12 @@ type ManagerUserDeRegisterReq struct {
 	ID int64 `json:"id"`
 }
 
+// ManagerUserSetStatusReq 设置用户状态
+type ManagerUserSetStatusReq struct {
+	ID     int64 `json:"id"`
+	Status int16 `json:"status"`
+}
+
 // UserSmsSendReq 用户发送短信请求结构
 type UserSmsSendReq struct {
 	BizType string `json:"bizType"`
@@ -50,9 +56,10 @@ type UserRegisterReq struct {
 	Profile    json.RawMessage `json:"profile"`
 }
 
-// UserLoginReq 用户密码登录请求.
+// UserLoginReq 用户名(手机号)+密码 登录请求.
 type UserLoginReq struct {
-	Tel      string `json:"tel" validate:"required,len=11"`
+	Tel      string `json:"tel" validate:"required_without=Username"`
+	Username string `json:"username" validate:"required_without=Tel"`
 	Password string `json:"password" validate:"required,len=40"` // 密码md5后的值
 	UserType int32  `json:"userType"`
 }

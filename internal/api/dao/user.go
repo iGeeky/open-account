@@ -177,6 +177,14 @@ func (u *UserDao) SetUsername(id int64, username string) {
 	u.UpdateBy(update, "id = ?", id)
 }
 
+// SetStatus 设置状态.
+func (u *UserDao) SetStatus(id int64, status int16) {
+	now := utils.Now()
+	update := map[string]interface{}{"status": status, "update_time": now}
+	log.Infof("SetStatus(id: %d, status: %d)...", id, status)
+	u.UpdateBy(update, "id = ?", id)
+}
+
 // SetTel 设置手机号
 func (u *UserDao) SetTel(id int64, tel string) {
 	now := utils.Now()

@@ -54,3 +54,17 @@ func ManagerUserDeRegister(c *gin.Context) {
 	}
 	ctx.JsonOk(gin.H{})
 }
+
+// ManagerUserSetStatus 后台设置用户状态
+func ManagerUserSetStatus(c *gin.Context) {
+	ctx := ginplus.NewContetPlus(c)
+	var args ManagerUserSetStatusReq
+	ctx.ParseQueryJSONObject(&args)
+
+	dao := dao.NewUserDao()
+	dao.MustGetByID(args.ID)
+
+	dao.SetStatus(args.ID, args.Status)
+
+	ctx.JsonOk(gin.H{})
+}

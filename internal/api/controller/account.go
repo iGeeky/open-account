@@ -52,6 +52,7 @@ func SmsLogin(c *gin.Context) {
 		userInfo.DeviceID = deviceID
 		userInfo.UserType = userType
 		userInfo.RegInviteCode = args.InviteCode
+		userInfo.Status = service.UserStatusOK
 		userInfo.CreateTime = now
 		userInfo.UpdateTime = now
 		userDao.Create(userInfo, configs.Config.InviteCodeLength)
@@ -134,6 +135,7 @@ func UserRegister(c *gin.Context) {
 	userInfo.Channel = channel
 	userInfo.DeviceID = deviceID
 	userInfo.RegInviteCode = args.InviteCode
+	userInfo.Status = service.UserStatusOK
 	userInfo.CreateTime = now
 	userInfo.UpdateTime = now
 	if len(args.Profile) > 0 {
@@ -182,11 +184,24 @@ func UserLogin(c *gin.Context) {
 	}
 
 	userDao := dao.NewUserDao()
-
-	userInfo := userDao.GetByTel(args.Tel, args.UserType)
-	if userInfo == nil {
-		log.Infof("user {tel: %s, userType: %d} login failed! tel not exist!", args.Tel, args.UserType)
-		ctx.JsonFail(errors.ErrTelNotExist)
+	var userInfo *dao.UserInfo
+	if args.Tel != "" {
+		userInfo = userDao.GetByTel(args.Tel, args.UserType)
+		if userInfo == nil {
+			log.Infof("user {tel: %s, userType: %d} login failed! tel not exist!", args.Tel, args.UserType)
+			ctx.JsonFail(errors.ErrTelNotExist)
+			return
+		}
+	} else if args.Username != "" {
+		userInfo = userDao.GetByUsername(args.Username, args.UserType)
+		if userInfo == nil {
+			log.Infof("user {username: %s, userType: %d} login failed! username not exist!", args.Username, args.UserType)
+			ctx.JsonFail(errors.ErrUsernameNotExist)
+			return
+		}
+	} else {
+		log.Warnf("user %+v login failed! ", &args)
+		ctx.JsonFail(errors.ErrArgsInvalid)
 		return
 	}
 

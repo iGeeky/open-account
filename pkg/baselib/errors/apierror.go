@@ -36,6 +36,8 @@ const (
 	ErrUsernameRegisted string = "ERR_USERNAME_REGISTED"
 	// ErrTelNotExist 手机不存在.
 	ErrTelNotExist string = "ERR_TEL_NOT_EXIST"
+	// ErrUsernameNotExist 用户名不存在
+	ErrUsernameNotExist string = "ERR_USERNAME_NOT_EXIST"
 	// ErrPasswordErr 密码错误
 	ErrPasswordErr string = "ERR_PASSWORD_ERR"
 	// ErrInviteCodeInvalid 邀请码不合法

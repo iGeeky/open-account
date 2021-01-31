@@ -239,12 +239,27 @@ class TestAccount(AccountTest):
         password = self.encodePassword("password")
         self.userRegister(tel, username, password=password)
 
+
+        schema = get_fail_schema('ERR_ARGS_INVALID')
+        body = {
+            "password": password,
+        }
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=400, schema=schema)
+
+        # 手机号登录
+        schema = get_user_login_schema()
         body = {
             "tel": tel,
             "password": password,
         }
-        schema = get_user_login_schema()
         res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+        # 用户名登录
+        body = {
+            "username": username,
+            "password": password,
+        }
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+
 
     def test_user_register_login_failed(self):
         tel = random_tel()
@@ -550,3 +565,33 @@ class TestAccount(AccountTest):
 
         schema = get_fail_schema('ERR_TOKEN_EXPIRED')
         res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=401, schema=schema)
+
+    def test_user_manager_lock_user(self):
+        tel = random_tel()
+        username = random_username()
+        password = self.encodePassword("password")
+        token, userInfo = self.userRegister(tel, username, password=password)
+
+        headers = self.getDefaultHeaders()
+        headers["X-OA-Token"] = token
+
+        # 后台注销注册用户
+        UserStatusDisabled = -1
+        body = {
+            "id": userInfo['id'],
+            "status": UserStatusDisabled,
+        }
+        schema = get_ok_schema()
+        res = self.http_put(url="/v1/man/account/user/status", headers=headers, body=body, status=200, schema=schema)
+
+        # 需要token的操作, 提示用户被锁定
+        schema = get_fail_schema('ERR_USER_IS_LOCKED')
+        res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=200, schema=schema)
+
+        # 重新登录,提示用户被锁定
+        body = {
+            "tel": tel,
+            "password": password,
+        }
+        schema = get_fail_schema('ERR_USER_IS_LOCKED')
+        res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)

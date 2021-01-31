@@ -48,7 +48,7 @@ func CheckTelSmsCode(ctx *ginplus.ContextPlus, bizType, tel, code string) (ok bo
 
 func LoginInternal(ctx *ginplus.ContextPlus, userInfo *dao.UserInfo) {
 	if userInfo.Status == UserStatusDisabled {
-		ctx.JsonFailWithMsg(errors.ErrUserIsLocked, "账号被冻结, 请联系客服")
+		ctx.JsonFailWithMsg(errors.ErrUserIsLocked, "账号已被冻结, 请联系客服")
 		return
 	}
 
