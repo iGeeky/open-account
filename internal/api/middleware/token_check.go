@@ -3,6 +3,7 @@ package middleware
 import (
 	// "fmt"
 
+	"open-account/configs"
 	"open-account/internal/api/dao"
 	"open-account/internal/api/service"
 	"open-account/internal/api/utils"
@@ -29,7 +30,7 @@ type TokenInfo struct {
 	ExpireTime int64
 }
 
-func tokenCheckInternal(token string, platform string) (tokenInfo *TokenInfo, err string) {
+func clientTokenCheckInternal(token string, platform string) (tokenInfo *TokenInfo, err string) {
 	userType, userID, expireTime, terr := utils.TokenDecrypt(token)
 	if terr != nil {
 		err = errors.ErrTokenInvalid
@@ -52,8 +53,21 @@ func tokenCheckInternal(token string, platform string) (tokenInfo *TokenInfo, er
 	return
 }
 
-func tokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
+func adminTokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
+	_ = ctx.Request.ParseForm()
+	token := ctx.GetHeader("X-OA-Token")
+	if token != configs.Config.AdminToken {
+		reason := errors.ErrTokenInvalid
+		log.Errorf("adminTokenCheck(%s) failed! err: %v", token, reason)
+		ctx.JSON(401, gin.H{"ok": false, "reason": reason})
+		ctx.Abort()
+		return false
+	}
 
+	return true
+}
+
+func clientTokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 	_ = ctx.Request.ParseForm()
 	token := ctx.GetHeader("X-OA-Token")
 	if token == "" {
@@ -68,7 +82,7 @@ func tokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 	platform, _, _, _ := ctx.GetClientMetaInfo()
 	// log.Infof("req_token: %s", token)
 	// Check Token from account
-	tokenInfo, reason := tokenCheckInternal(token, platform)
+	tokenInfo, reason := clientTokenCheckInternal(token, platform)
 	if reason != "" {
 		if tokenCheckLevel > service.TokenNone {
 			log.Errorf("CheckToken(%s) failed! err: %v", token, reason)
@@ -128,7 +142,11 @@ func TokenCheckFilter(c *gin.Context) {
 		}
 	}
 
-	tokenCheck(ctx, tokenCheckLevel)
+	if tokenCheckLevel == service.TokenAdmin {
+		adminTokenCheck(ctx, tokenCheckLevel)
+	} else {
+		clientTokenCheck(ctx, tokenCheckLevel)
+	}
 
 	c.Next()
 }

@@ -529,7 +529,7 @@ class TestAccount(AccountTest):
             "password": newPassword,
         }
         schema = get_ok_schema()
-        res = self.http_put(url="/v1/man/account/user/password/reset", headers=headers, body=body, status=200, schema=schema)
+        res = self.http_put(url="/v1/man/account/user/password/reset", headers=self.getAdminHeaders(), body=body, status=200, schema=schema)
 
         # 使用旧密码登录失败
         body = {
@@ -561,7 +561,7 @@ class TestAccount(AccountTest):
             "id": userInfo['id']
         }
         schema = get_ok_schema()
-        res = self.http_delete(url="/v1/man/account/user/deregister", headers=headers, body=body, status=200, schema=schema)
+        res = self.http_delete(url="/v1/man/account/user/deregister", headers=self.getAdminHeaders(), body=body, status=200, schema=schema)
 
         schema = get_fail_schema('ERR_TOKEN_EXPIRED')
         res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=401, schema=schema)
@@ -582,7 +582,7 @@ class TestAccount(AccountTest):
             "status": UserStatusDisabled,
         }
         schema = get_ok_schema()
-        res = self.http_put(url="/v1/man/account/user/status", headers=headers, body=body, status=200, schema=schema)
+        res = self.http_put(url="/v1/man/account/user/status", headers=self.getAdminHeaders(), body=body, status=200, schema=schema)
 
         # 需要token的操作, 提示用户被锁定
         schema = get_fail_schema('ERR_USER_IS_LOCKED')

@@ -42,8 +42,12 @@ def random_username():
     return username
 
 class AccountTest(HttpTest):
+    # 超级验证码
     SUPER_TEST_CODE = "0bce718389e18ba44fa98b9da51fc3e3"
+    # 用户测试环境获取验证码
     SUPER_KEY = "91af98b3bd246347f8d6eea0573ef7e7"
+    # 管理Token
+    ADMIN_TOKEN = "2c36a5c195a4f66c1a09046af67126ed"
 
     def getDefaultHeaders(self):
         headers = {}
@@ -52,6 +56,17 @@ class AccountTest(HttpTest):
         headers["X-OA-Version"] = "0.1.290" # app的版本.
         headers["X-OA-DeviceID"] = "test-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
         headers["X-OA-AppID"] = "open-account"
+        return deepcopy(headers)
+
+    def getAdminHeaders(self):
+        headers = {}
+        headers["X-OA-Channel"] = "h5" # app分发渠道
+        headers["X-OA-Platform"] = "h5-test"  # app平台:android/ios/h5/xxx
+        headers["X-OA-Version"] = "1.0.25" # app的版本.
+        headers["X-OA-DeviceID"] = "test-web-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
+        headers["X-OA-AppID"] = "open-account"
+        headers["X-OA-TOken"] = AccountTest.ADMIN_TOKEN
+
         return deepcopy(headers)
 
     def encodePassword(self, password):

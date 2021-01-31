@@ -61,7 +61,10 @@ type ServerConfig struct {
 	TestAccounts map[string]string `yaml:"test_accounts"`
 	// 给单元测试使用的超级验证码, 只在Debug=true时有效果.
 	SuperCodeForTest string `yaml:"super_code_for_test"`
-	SuperKeyForTest  string `yaml:"super_key_for_test"`
+	// 访问`/v1/man/account/sms/get/code`接口使用的key.
+	SuperKeyForTest string `yaml:"super_key_for_test"`
+	// 访问后台接口(以 `/v1/man/` 开头的)需要使用该token.
+	AdminToken string `yaml:"admin_token"`
 
 	InviteCodeSettingPeriod time.Duration `yaml:"invite_code_setting_period"`
 
