@@ -55,8 +55,9 @@ type ServerConfig struct {
 	Debug             bool   `yaml:"debug"`
 	DisableStacktrace bool   `yaml:"disable_stacktrace"`
 	URLSign           bool   `yaml:"url_sign"`
+	CheckCaptcha      bool   `yaml:"check_captcha"`
+	ServerEnv         string `yaml:"server_env"`
 
-	ServerEnv string `yaml:"server_env"`
 	// 客户端测试账号,(不会真正发送验证码) key为手机号, value为验证码.
 	TestAccounts map[string]string `yaml:"test_accounts"`
 	// 给单元测试使用的超级验证码, 只在Debug=true时有效果.
@@ -102,6 +103,7 @@ func LoadConfig(configFilename string) (config *ServerConfig, err error) {
 		CheckSign:    true,
 		Debug:        false,
 		URLSign:      false,
+		CheckCaptcha: false,
 		ServerEnv:    "dev",
 		ReqDebug:     true,
 		ReqDebugHost: "http://127.0.0.1:2021",

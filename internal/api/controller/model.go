@@ -2,6 +2,12 @@ package controller
 
 import "encoding/json"
 
+// CaptchaReq Captcha请求信息
+type CaptchaReq struct {
+	CaptchaID    string `json:"captchaID"`
+	CaptchaValue string `json:"captchaValue"`
+}
+
 // ManagerUserResetPwdReq 用户重置密码
 type ManagerUserResetPwdReq struct {
 	Tel      string `json:"tel" validate:"required,len=11"`
@@ -24,6 +30,7 @@ type ManagerUserSetStatusReq struct {
 type UserSmsSendReq struct {
 	BizType string `json:"bizType"`
 	Tel     string `json:"tel" validate:"required,len=11"`
+	CaptchaReq
 }
 
 // TelCodeInfo 用户验证码基础结构
@@ -62,6 +69,7 @@ type UserLoginReq struct {
 	Username string `json:"username" validate:"required_without=Tel"`
 	Password string `json:"password" validate:"required,len=40"` // 密码md5后的值
 	UserType int32  `json:"userType"`
+	CaptchaReq
 }
 
 // UserSetInfoReq 设置用户基本信息.

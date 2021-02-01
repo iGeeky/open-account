@@ -36,6 +36,9 @@ func getAPIRouters() (routers []RouterInfo) {
 		{HTTP_DELETE, "/man/account/user/deregister", false, TokenAdmin, controller.ManagerUserDeRegister},
 		{HTTP_PUT, "/man/account/user/status", true, TokenAdmin, controller.ManagerUserSetStatus},
 
+		{HTTP_GET, "/account/captcha", true, TokenNone, controller.CaptchaInfo},
+		{HTTP_GET, "/account/captcha/:name", false, TokenNone, controller.CaptchaFile},
+
 		{HTTP_POST, "/account/user/sms/send", true, TokenNone, controller.UserSmsSend},
 		{HTTP_POST, "/account/user/sms/login", true, TokenNone, controller.SmsLogin},
 

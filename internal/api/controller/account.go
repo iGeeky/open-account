@@ -78,6 +78,7 @@ func UserSmsSend(c *gin.Context) {
 	if bizType == "" {
 		bizType = LoginBizType
 	}
+	service.CheckCaptcha(ctx, args.CaptchaID, args.CaptchaValue, "tel="+tel)
 
 	code := service.GenerateCode(bizType, 5)
 	ok, reason := service.SendSmsCode(bizType, tel, code)
@@ -182,6 +183,7 @@ func UserLogin(c *gin.Context) {
 	if args.UserType == 0 {
 		args.UserType = service.UserTypeNormal
 	}
+	service.CheckCaptcha(ctx, args.CaptchaID, args.CaptchaValue, "tel="+args.Tel)
 
 	userDao := dao.NewUserDao()
 	var userInfo *dao.UserInfo

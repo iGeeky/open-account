@@ -9,6 +9,7 @@ import (
 	"open-account/pkg/baselib/log"
 	"time"
 
+	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"github.com/sevlyar/retag"
 )
@@ -62,4 +63,20 @@ func LoginInternal(ctx *ginplus.ContextPlus, userInfo *dao.UserInfo) {
 
 	data := gin.H{"token": token, "userInfo": retag.Convert(userInfo, retag.NewView("json", "detail"))}
 	ctx.JsonOk(data)
+}
+
+// CheckCaptcha 校验Captcha
+func CheckCaptcha(ctx *ginplus.ContextPlus, captchaID, captchaValue string, client string) {
+	isCheck := configs.Config.CheckCaptcha
+	if configs.Config.Debug && captchaID == "testcaptcha" && captchaValue == configs.Config.SuperCodeForTest {
+		isCheck = false
+	}
+	if isCheck {
+		ok := captcha.VerifyString(captchaID, captchaValue)
+		if !ok {
+			log.Infof("user [%s] captcha.Verify failed!", client)
+			ctx.JsonFail(errors.ErrCaptchaError)
+			panic(errors.NewError(errors.ErrCaptchaError, "人机验证码输入错误"))
+		}
+	}
 }
