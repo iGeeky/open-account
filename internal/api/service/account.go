@@ -14,6 +14,23 @@ import (
 	"github.com/sevlyar/retag"
 )
 
+func insertUserLoginLog(ctx *ginplus.ContextPlus, userID int64) {
+	loginIP := ctx.ClientIP()
+	platform, version, channel, deviceID := ctx.GetClientMetaInfo()
+	now := time.Now().Unix()
+	log := dao.UserLoginLog{
+		UserID:     userID,
+		DeviceID:   deviceID,
+		LoginIP:    loginIP,
+		Channel:    channel,
+		Platform:   platform,
+		Version:    version,
+		CreateTime: now,
+	}
+	dao := dao.NewUserLoginLogDao()
+	dao.Insert(log)
+}
+
 func tokenCreate(userInfo *dao.UserInfo, platform string) (token string, err error) {
 	userID, userType := userInfo.ID, userInfo.UserType
 	log.Infof("login >>> userID: %d, userType: %d uid: %s", userID, userType, userInfo.UID)
@@ -60,6 +77,8 @@ func LoginInternal(ctx *ginplus.ContextPlus, userInfo *dao.UserInfo) {
 		return
 	}
 	log.Infof("user [%s] login success!", userInfo.Tel)
+
+	insertUserLoginLog(ctx, userInfo.ID)
 
 	data := gin.H{"token": token, "userInfo": retag.Convert(userInfo, retag.NewView("json", "detail"))}
 	ctx.JsonOk(data)

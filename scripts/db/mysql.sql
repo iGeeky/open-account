@@ -34,7 +34,7 @@ create table if not exists `user` (
     `platform` varchar(64) null comment "APP/客户端平台: ios/android/h5/xxx",
     `version` varchar(128) null comment "客户端版本: 1.120.999",
     `device_id` varchar(128) null comment "设备id",
-    `ip` varchar(256) null comment '用户IP',
+    `ip` varchar(32) null comment '用户IP',
     `create_time` int not null comment '创建时间',
     `update_time` int not null comment '修改时间',
     `profile` JSON null comment '概况,配置信息等',
@@ -44,3 +44,19 @@ create table if not exists `user` (
     KEY(`invite_code`),
     KEY(`create_time`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin comment '用户表';
+
+create table if not exists user_login_log (
+    `id` bigint not null primary key auto_increment comment '自动增长id',
+    `user_id` bigint not null,
+    `device_id` varchar(128) null comment "设备id",
+    `login_ip` varchar(32) null comment '用户登录IP',
+    `country_code` varchar(32) default null,
+    `city_name` varchar(32) default null,
+    `channel` varchar(128) null comment "用户渠道",
+    `platform` varchar(64) null comment "APP/客户端平台: ios/android/h5/xxx",
+    `version` varchar(128) null comment "客户端版本: 1.120.999",
+    create_time int not null,
+    KEY(user_id),
+    KEY(login_ip),
+    KEY(create_time)
+)ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_bin comment '用户登录日志表';
