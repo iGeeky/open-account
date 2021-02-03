@@ -11,6 +11,7 @@ import (
 	"open-account/internal/api/routers"
 	apiutils "open-account/internal/api/utils"
 	"open-account/pkg/baselib/db"
+	"open-account/pkg/baselib/ginplus"
 	"open-account/pkg/baselib/log"
 	"open-account/pkg/baselib/utils"
 	"os"
@@ -99,6 +100,12 @@ func main() {
 
 	db.InitDBConfig(config.AccountDB.MaxOpenConns, config.AccountDB.MaxIdleConns)
 	apiutils.InitRedisStore(config)
+
+	ginplus.InitSign(config.SignHeaders, config.CustomHeaderPrefix)
+	signUrls := make(map[string]bool, 10)
+	ginplus.SignConfig = ginplus.APISignConfig{config.Debug, config.CheckSign, config.SuperSignKey, config.AppKeys, signUrls}
+	ginplus.InitGinPlus(config.CustomHeaderPrefix)
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	err = startServer(config)

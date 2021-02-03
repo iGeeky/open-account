@@ -15,6 +15,16 @@ import (
 	valid "github.com/go-playground/validator/v10"
 )
 
+// 需要签名的请求头前缀
+var gCustomHeaderPrefix = "X-OA-"
+
+// InitGinPlus 初始化
+func InitGinPlus(customHeaderPrefix string) {
+	if customHeaderPrefix != "" {
+		gCustomHeaderPrefix = customHeaderPrefix
+	}
+}
+
 // ContextPlus 扩展的上下文.
 type ContextPlus struct {
 	*gin.Context
@@ -28,18 +38,29 @@ func NewContetPlus(c *gin.Context) (context *ContextPlus) {
 	return
 }
 
+// CustomHeaderName 获取自定义的请求头名.
+func (c *ContextPlus) CustomHeaderName(headerName string) (customHeaderName string) {
+	return gCustomHeaderPrefix + headerName
+}
+
+// GetCustomHeader 获取自定义的请求头(请求头名称会自动添加配置的customHeaderPrefix)
+func (c *ContextPlus) GetCustomHeader(key string) string {
+	return c.GetHeader(c.CustomHeaderName(key))
+}
+
 // MustGetUserID 获取用户ID,用户类型.
 func (c *ContextPlus) MustGetUserID() (userID int64, userType int32) {
+	headerName := c.CustomHeaderName("token")
 	iUserID, isExist := c.Context.Get("userID")
 	if !isExist {
-		log.Errorf("c.Get('userID') failed! maybe the 'X-OA-Token' is missing")
-		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the 'X-OA-Token' is missing"))
+		log.Errorf("c.Get('userID') failed! maybe the '%s' is missing", headerName)
+		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the '"+headerName+"' is missing"))
 	}
 
 	iUserType, isExist := c.Context.Get("userType")
 	if !isExist {
-		log.Errorf("c.Get('userType') failed! maybe the 'X-OA-Token' is missing")
-		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the 'X-OA-Token' is missing"))
+		log.Errorf("c.Get('userID') failed! maybe the '%s' is missing", headerName)
+		panic(errors.NewError(errors.ErrArgsInvalid, "maybe the '"+headerName+"' is missing"))
 	}
 
 	userID = iUserID.(int64)
@@ -209,10 +230,10 @@ func (c *ContextPlus) MustGetInt64(key string) (value int64) {
 
 // GetClientMetaInfo 获取请求头中的Platform,Version, Channel, deviceID 相关信息.
 func (c *ContextPlus) GetClientMetaInfo() (platform, version, channel, deviceID string) {
-	platform = c.GetHeader("X-OA-Platform")
-	version = c.GetHeader("X-OA-Version")
-	channel = c.GetHeader("X-OA-Channel")
-	deviceID = c.GetHeader("X-OA-DeviceID")
+	platform = c.GetCustomHeader("platform")
+	version = c.GetCustomHeader("version")
+	channel = c.GetCustomHeader("channel")
+	deviceID = c.GetCustomHeader("deviceID")
 
 	return
 }

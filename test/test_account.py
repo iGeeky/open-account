@@ -2,7 +2,7 @@
 import time
 import json
 import unittest
-from pycore import AccountTest, random_tel, random_username
+from pycore import AccountTest, random_tel, random_username, CH
 from pycore.utils import get_ok_schema, get_fail_schema, get_user_login_schema, get_userinfo_schema, get_sms_code_schema
 from pycore.schema_gen import set_schema_enums
 
@@ -176,7 +176,7 @@ class TestAccount(AccountTest):
 
     def test_user_get_userinfo_failed_token_invlid(self):
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = "TOKEN-INVALID"
+        headers[CH("Token")] = "TOKEN-INVALID"
         schema = get_fail_schema('ERR_TOKEN_INVALID')
         res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=401, schema=schema)
 
@@ -188,7 +188,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, inviteCode=inviteCode, profile=profile, login_enums={"regInviteCode": inviteCode})
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
         schema = get_userinfo_schema(enums={"tel": tel, "username": username, "regInviteCode": inviteCode})
         res = self.http_get(url='/v1/account/user/userinfo', headers=headers, status=200, schema=schema)
 
@@ -209,7 +209,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
         schema = get_ok_schema()
         body = {}
         res = self.http_post(url='/v1/account/user/logout', headers=headers, body=body, status=200, schema=schema)
@@ -286,7 +286,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, password=oldPassword)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         body = {
             "oldPassword": errPassword,
@@ -303,7 +303,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, password=oldPassword)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 修改密码
         body = {
@@ -337,7 +337,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, password=oldPassword)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 发送验证码
         body = {
@@ -408,7 +408,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, password=oldPassword)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 发送验证码
         body = {
@@ -465,7 +465,7 @@ class TestAccount(AccountTest):
         token1, userInfo = self.userRegister(inv_tel, inv_username)
         inviteCode = userInfo["inviteCode"]
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token1
+        headers[CH("Token")] = token1
         # 设置自己的邀请码
         body = { "inviteCode": inviteCode }
         schema = get_fail_schema('ERR_INVITE_CODE_INVALID')
@@ -474,7 +474,7 @@ class TestAccount(AccountTest):
         # 被邀请的用户
         token2, _ = self.userRegister(tel, username, password=oldPassword)
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token2
+        headers[CH("Token")] = token2
 
         # 检查是否可设置邀请码
         schema = get_invite_code_settable_schema(True)
@@ -500,7 +500,7 @@ class TestAccount(AccountTest):
         tel = random_tel()
         token, _ = self.userRegister(tel, "")
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 设置用户名
         username = random_username()
@@ -521,7 +521,7 @@ class TestAccount(AccountTest):
         token, _ = self.userRegister(tel, username, password=oldPassword)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 后台重置密码
         body = {
@@ -554,7 +554,7 @@ class TestAccount(AccountTest):
         token, userInfo = self.userRegister(tel, username, password=password)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 后台注销注册用户
         body = {
@@ -573,7 +573,7 @@ class TestAccount(AccountTest):
         token, userInfo = self.userRegister(tel, username, password=password)
 
         headers = self.getDefaultHeaders()
-        headers["X-OA-Token"] = token
+        headers[CH("Token")] = token
 
         # 后台注销注册用户
         UserStatusDisabled = -1

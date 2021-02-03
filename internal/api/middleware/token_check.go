@@ -55,7 +55,7 @@ func clientTokenCheckInternal(token string, platform string) (tokenInfo *TokenIn
 
 func adminTokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 	_ = ctx.Request.ParseForm()
-	token := ctx.GetHeader("X-OA-Token")
+	token := ctx.GetCustomHeader("token")
 	if token != configs.Config.AdminToken {
 		reason := errors.ErrTokenInvalid
 		log.Errorf("adminTokenCheck(%s) failed! err: %v", token, reason)
@@ -69,7 +69,7 @@ func adminTokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 
 func clientTokenCheck(ctx *ginplus.ContextPlus, tokenCheckLevel int) bool {
 	_ = ctx.Request.ParseForm()
-	token := ctx.GetHeader("X-OA-Token")
+	token := ctx.GetCustomHeader("token")
 	if token == "" {
 		if tokenCheckLevel > service.TokenNone {
 			log.Errorf("token missing..")
@@ -129,10 +129,9 @@ func TokenCheckFilter(c *gin.Context) {
 
 	appID, exist := c.Get("appID")
 	if !exist && appID == nil {
-		headers := c.Request.Header
-		appID := headers.Get("X-OA-AppID")
+		appID := ctx.GetCustomHeader("appID")
 		if appID == "" && tokenCheckLevel > service.TokenNone {
-			log.Errorf("header 'X-OA-AppID not found.")
+			log.Errorf("header '%s' not found.", ctx.CustomHeaderName("appID"))
 			c.JSON(401, gin.H{"ok": false, "reason": errors.ErrArgsInvalid})
 			c.Abort()
 			return

@@ -9,8 +9,10 @@ if log_level:
 
 from . import http_test
 HttpTest = http_test.HttpTest
+customHeaderPrefix = "X-OA-"
 
 def init():
+    global customHeaderPrefix
     server = os.environ.get('SERVER')
     if server:
         HttpTest.SERVER = server
@@ -18,6 +20,9 @@ def init():
     timeout = os.environ.get('TIMEOUT')
     if timeout:
         HttpTest.TIMEOUT = int(timeout)
+    headerPrefix = os.environ.get('HEADER_PREFIX')
+    if headerPrefix:
+        customHeaderPrefix = headerPrefix
 
 init()
 
@@ -41,6 +46,9 @@ def random_username():
     now += 1
     return username
 
+def CH(headerName):
+    return customHeaderPrefix + headerName
+
 class AccountTest(HttpTest):
     # 超级验证码
     SUPER_TEST_CODE = "0bce718389e18ba44fa98b9da51fc3e3"
@@ -51,21 +59,21 @@ class AccountTest(HttpTest):
 
     def getDefaultHeaders(self):
         headers = {}
-        headers["X-OA-Channel"] = "xiaomi" # app分发渠道
-        headers["X-OA-Platform"] = "test"  # app平台:android/ios/h5/xxx
-        headers["X-OA-Version"] = "0.1.290" # app的版本.
-        headers["X-OA-DeviceID"] = "test-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
-        headers["X-OA-AppID"] = "open-account"
+        headers[CH("Channel")] = "xiaomi" # app分发渠道
+        headers[CH("Platform")] = "test"  # app平台:android/ios/h5/xxx
+        headers[CH("Version")] = "0.1.290" # app的版本.
+        headers[CH("DeviceID")] = "test-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
+        headers[CH("AppID")] = "open-account"
         return deepcopy(headers)
 
     def getAdminHeaders(self):
         headers = {}
-        headers["X-OA-Channel"] = "h5" # app分发渠道
-        headers["X-OA-Platform"] = "h5-test"  # app平台:android/ios/h5/xxx
-        headers["X-OA-Version"] = "1.0.25" # app的版本.
-        headers["X-OA-DeviceID"] = "test-web-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
-        headers["X-OA-AppID"] = "open-account"
-        headers["X-OA-TOken"] = AccountTest.ADMIN_TOKEN
+        headers[CH("Channel")] = "h5" # app分发渠道
+        headers[CH("Platform")] = "h5-test"  # app平台:android/ios/h5/xxx
+        headers[CH("Version")] = "1.0.25" # app的版本.
+        headers[CH("DeviceID")] = "test-web-device-id" # app所在设备ID,应该根据唯一算法,生成一个唯一的ID.
+        headers[CH("AppID")] = "open-account"
+        headers[CH("TOken")] = AccountTest.ADMIN_TOKEN
 
         return deepcopy(headers)
 

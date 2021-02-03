@@ -3,7 +3,8 @@ server_env: local-dev
 log_filename: /data/logs/open-account.log
 # listen 0.0.0.0 only for test.
 listen: 0.0.0.0:2021
-check_sign: true
+custom_header_prefix: X-OA-
+check_sign: false
 debug: true
 disable_stacktrace: false
 super_key_for_test: 91af98b3bd246347f8d6eea0573ef7e7

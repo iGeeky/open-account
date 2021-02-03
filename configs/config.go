@@ -60,10 +60,12 @@ type ServerConfig struct {
 
 	// 客户端测试账号,(不会真正发送验证码) key为手机号, value为验证码.
 	TestAccounts map[string]string `yaml:"test_accounts"`
-	// 给单元测试使用的超级验证码, 只在Debug=true时有效果.
+	// 给单元测试使用的超级验证码, 只在Debug=true时有效.
 	SuperCodeForTest string `yaml:"super_code_for_test"`
 	// 访问`/v1/man/account/sms/get/code`接口使用的key.
 	SuperKeyForTest string `yaml:"super_key_for_test"`
+	// 超级签名, 仅用于测试, 只在Debug=true时有效
+	SuperSignKey string `yaml:"super_sign_key"`
 	// 访问后台接口(以 `/v1/man/` 开头的)需要使用该token.
 	AdminToken string `yaml:"admin_token"`
 
@@ -83,7 +85,10 @@ type ServerConfig struct {
 	CORS CORS `yaml:"cors"`
 
 	// appID及对应的sign key
-	AppKeys map[string]string `yaml:"app_keys"`
+	AppKeys     map[string]string `yaml:"app_keys"`
+	SignHeaders []string          `yaml:"sign_headers"` //需要参与签名的请求头列表
+
+	CustomHeaderPrefix string `yaml:"custom_header_prefix"` //自定义请求头的前缀(默认为X-OA-)
 }
 
 // Config 全局配置
@@ -111,6 +116,7 @@ func LoadConfig(configFilename string) (config *ServerConfig, err error) {
 		FdExpiretime: time.Minute * 10,
 
 		InviteCodeSettingPeriod: time.Hour * 24 * 7, // 默认7天内可设置邀请码.
+		CustomHeaderPrefix:      "X-OA-",
 
 		AccountDB: &DatabaseConfig{
 			Dialect:      "mysql",

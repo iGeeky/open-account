@@ -221,7 +221,7 @@ func UserLogin(c *gin.Context) {
 func UserLogout(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)
 	userID, _ := ctx.MustGetUserID()
-	token := c.GetHeader("X-OA-Token")
+	token := ctx.GetCustomHeader("token")
 	_ = apiutils.TokenDelete(userID, token)
 	ctx.JsonOk(gin.H{})
 }

@@ -5,6 +5,7 @@ import (
 	"open-account/configs"
 	"open-account/internal/api/controller"
 	"open-account/internal/api/middleware"
+	"open-account/pkg/baselib/ginplus"
 	"open-account/pkg/baselib/log"
 	"strings"
 
@@ -94,6 +95,9 @@ func initOneRouter(r *gin.Engine, ver string, routers []RouterInfo) {
 
 		// Check Token map 添加.
 		middleware.NeedTokenURLs[url] = routerInfo.CheckToken
+		// Check Sign map 添加
+		ginplus.SignConfig.SignUrls[url] = routerInfo.CheckSign
+
 	}
 }
 
@@ -138,6 +142,7 @@ func InitRouter(config *configs.ServerConfig) *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(CorsHeader)
 	r.Use(middleware.PanicHandler)
+	r.Use(ginplus.SignCheck)
 	r.Use(middleware.TokenCheckFilter)
 
 	initOneRouter(r, "/v1", getAPIRouters())
