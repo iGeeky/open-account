@@ -354,7 +354,7 @@ class TestAccount(AccountTest):
             "key": AccountTest.SUPER_KEY
         }
         schema = get_sms_code_schema()
-        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        res = self.http_get(url='/v1/man/account/sms/get/code', headers=headers, args=args, status=200, schema=schema)
         code = res.json["data"]["code"]
 
         # 重置密码, 验证码类型错误
@@ -388,7 +388,7 @@ class TestAccount(AccountTest):
             "key": AccountTest.SUPER_KEY
         }
         schema = get_sms_code_schema()
-        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        res = self.http_get(url='/v1/man/account/sms/get/code', headers=headers, args=args, status=200, schema=schema)
         code = res.json["data"]["code"]
 
         # 重置密码, 手机号不存在
@@ -425,7 +425,7 @@ class TestAccount(AccountTest):
             "key": AccountTest.SUPER_KEY
         }
         schema = get_sms_code_schema()
-        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        res = self.http_get(url='/v1/man/account/sms/get/code', headers=headers, args=args, status=200, schema=schema)
         code = res.json["data"]["code"]
 
         # 重置密码
@@ -595,3 +595,4 @@ class TestAccount(AccountTest):
         }
         schema = get_fail_schema('ERR_USER_IS_LOCKED')
         res = self.http_post(url="/v1/account/user/login", headers=headers, body=body, status=200, schema=schema)
+        # print(res.req_debug)

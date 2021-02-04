@@ -7,6 +7,7 @@ log_level = os.environ.get('LOG_LEVEL', 'ERROR') # INFO,WARN,ERROR
 if log_level:
     logging.basicConfig(level=log_level, format="%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s")
 
+from .utils import CH
 from . import http_test
 HttpTest = http_test.HttpTest
 customHeaderPrefix = "X-OA-"
@@ -20,6 +21,9 @@ def init():
     timeout = os.environ.get('TIMEOUT')
     if timeout:
         HttpTest.TIMEOUT = int(timeout)
+    signDebug = os.environ.get('SIGN_DEBUG') in ['yes', 'true']
+    HttpTest.signDebug = signDebug
+
     headerPrefix = os.environ.get('HEADER_PREFIX')
     if headerPrefix:
         customHeaderPrefix = headerPrefix
@@ -28,13 +32,13 @@ init()
 
 import time
 from threading import Lock
-now = int(time.time()) - 1600000000
+now = int(time.time() * 100) - 160000000000
 lock = Lock()
 def random_tel():
     global now
     lock.acquire()
     try :
-        tel = '130%08d' % (now)
+        tel = '1%08d' % (now)
         now += 1
     finally :
         lock.release()
@@ -46,9 +50,6 @@ def random_username():
     now += 1
     return username
 
-def CH(headerName):
-    return customHeaderPrefix + headerName
-
 class AccountTest(HttpTest):
     # 超级验证码
     SUPER_TEST_CODE = "0bce718389e18ba44fa98b9da51fc3e3"
@@ -59,6 +60,8 @@ class AccountTest(HttpTest):
 
     def getDefaultHeaders(self):
         headers = {}
+        headers["Content-Type"] = "application/json"
+        # headers["Host"] = "api.open.com"
         headers[CH("Channel")] = "xiaomi" # app分发渠道
         headers[CH("Platform")] = "test"  # app平台:android/ios/h5/xxx
         headers[CH("Version")] = "0.1.290" # app的版本.
@@ -68,6 +71,7 @@ class AccountTest(HttpTest):
 
     def getAdminHeaders(self):
         headers = {}
+        headers["Content-Type"] = "application/json"
         headers[CH("Channel")] = "h5" # app分发渠道
         headers[CH("Platform")] = "h5-test"  # app平台:android/ios/h5/xxx
         headers[CH("Version")] = "1.0.25" # app的版本.

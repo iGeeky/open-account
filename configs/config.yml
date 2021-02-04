@@ -4,7 +4,7 @@ log_filename: /data/logs/open-account.log
 # listen 0.0.0.0 only for test.
 listen: 0.0.0.0:2021
 custom_header_prefix: X-OA-
-check_sign: false
+check_sign: true
 debug: true
 disable_stacktrace: false
 super_key_for_test: 91af98b3bd246347f8d6eea0573ef7e7
@@ -27,3 +27,5 @@ sms_redis:
   cache_name: sms
   addr: 127.0.0.1:6379
   db_index: 2
+app_keys:
+  open-account: 130da3dc2a9bb1893d5bf85e3c67452d

@@ -19,7 +19,7 @@ var defSignHeaders = []string{"host", "date"}
 var signHeaderMap = map[string]bool{}
 
 // 需要签名的请求头前缀
-var gSignHeaderPrefix = "X-OA-"
+var gSignHeaderPrefix = "x-oa-"
 
 type APISignConfig struct {
 	Debug        bool
@@ -40,7 +40,7 @@ func InitSign(signHeaders []string, signHeaderPrefix string) {
 		signHeaderMap[strings.ToLower(header)] = true
 	}
 	if signHeaderPrefix != "" {
-		gSignHeaderPrefix = signHeaderPrefix
+		gSignHeaderPrefix = strings.ToLower(signHeaderPrefix)
 	}
 }
 
@@ -105,9 +105,9 @@ func createCanonicalArgs(args map[string][]string) string {
 			// keyValues.WriteString()
 		} else { // is array
 			sort.Strings(value)
-			for _, value_sub := range value {
-				// keyValues.WriteString(uri_encode(key) + "=" + uri_encode(value_sub))
-				keyValues = append(keyValues, uri_encode(key)+"="+uri_encode(value_sub))
+			for _, valueSub := range value {
+				// keyValues.WriteString(uri_encode(key) + "=" + uri_encode(valueSub))
+				keyValues = append(keyValues, uri_encode(key)+"="+uri_encode(valueSub))
 			}
 		}
 	}
@@ -120,10 +120,12 @@ func createCanonicalHeaders(headers map[string][]string) (string, string) {
 	lowerHeaders := make(map[string]string)
 	signedHeaders := []string{}
 	ignoreSignHeader := gSignHeaderPrefix + "sign"
+	// log.Infof("---request headers: %+v", headers)
 	for k, v := range headers {
 		k = strings.ToLower(k)
 		// TODO: value 是数组的情况。
 		_, sign := signHeaderMap[k]
+		// log.Infof("signHeaderMap: %+v, k: %s, sign: %v", signHeaderMap, k, sign)
 		if k != ignoreSignHeader && (sign || strings.HasPrefix(k, gSignHeaderPrefix)) {
 			signedHeaders = append(signedHeaders, k)
 			sort.Strings(v)

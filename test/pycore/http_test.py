@@ -3,10 +3,10 @@
 import unittest
 from . import http_client as http
 from . import schema_gen
+from .utils import CH,AppKeys
+from .api_sign import sign
 import json
-import time
-import re
-import sys
+from urllib.parse import urlparse
 import jsonschema as jschema
 
 
@@ -55,6 +55,8 @@ def is_json(myjson):
 class HttpTest(unittest.TestCase):
     SERVER = "http://127.0.0.1:2021"
     TIMEOUT = 300.0
+    signDebug = False
+
     # 执行总时间
     total_time = 0.0
     # 执行总次数
@@ -177,13 +179,22 @@ class HttpTest(unittest.TestCase):
         headers = kwargs.get('headers', {})
         args = kwargs.get('args', {})
         body = kwargs.get('body')
-        if body:
+        if body != None:
             if isinstance(body, dict):
                 body = json.dumps(body)
         if url.startswith('/'):
             full_url = "%s%s" % (self.server , url)
         else:
             full_url = url
+        
+        appID = headers[CH("AppID")]
+        appKey = AppKeys[appID]
+        purl = urlparse(url)
+        uri = purl.path
+        signature, SignStr = sign(uri, args, headers, body, appKey)
+        if signature:
+            headers[CH("Sign")] = signature
+
         res = http.HttpReq(method, full_url, headers, args, body, self.timeout)
         self.current_res = res
         status = kwargs.get("status", None)
@@ -194,6 +205,10 @@ class HttpTest(unittest.TestCase):
         if statTime:
             HttpTest.total_time += res.duration
             HttpTest.total_num += 1
+
+        if self.signDebug and (res.status == 401 or res.status == 403):
+            print('signature: %s' % (signature))
+            print('SignStr: [[[%s]]]\n' %( SignStr))
 
         self.check_response(res, status, schema, match, notMatch, kwargs)
         return res

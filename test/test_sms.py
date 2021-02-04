@@ -15,7 +15,7 @@ class TestSMS(AccountTest):
         }
         headers = self.getDefaultHeaders()
         schema = get_ok_schema()
-        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=get_ok_schema())
+        res = self.http_post(url='/v1/account/user/sms/send', headers=headers, body=body, status=200, schema=schema)
         # print(res.json)
 
     def test_sms_login_ok(self):
@@ -33,7 +33,7 @@ class TestSMS(AccountTest):
             "key": AccountTest.SUPER_KEY
         }
         schema = get_sms_code_schema()
-        res = self.http_get(url='/v1/man/account/sms/get/code', args=args, status=200, schema=schema)
+        res = self.http_get(url='/v1/man/account/sms/get/code', headers=headers, args=args, status=200, schema=schema)
         code = res.json["data"]["code"]
 
         # 验证码登录.

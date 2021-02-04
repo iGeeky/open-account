@@ -1,5 +1,14 @@
 from pycore.schema_gen import set_schema_enums
 
+customHeaderPrefix = "X-OA-"
+
+def CH(headerName):
+    return customHeaderPrefix + headerName
+
+AppKeys = {
+    "open-account": "130da3dc2a9bb1893d5bf85e3c67452d",
+}
+
 def get_ok_schema(data_schema={"type": "object" }):
     schema = {
         "type": "object",
