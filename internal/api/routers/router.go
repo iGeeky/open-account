@@ -2,11 +2,11 @@ package routers
 
 import (
 	"fmt"
-	"open-account/configs"
-	"open-account/internal/api/controller"
-	"open-account/internal/api/middleware"
-	"open-account/pkg/baselib/ginplus"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/internal/api/controller"
+	"github.com/iGeeky/open-account/internal/api/middleware"
+	"github.com/iGeeky/open-account/pkg/baselib/ginplus"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 	"strings"
 
 	"github.com/gin-gonic/gin"

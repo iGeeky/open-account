@@ -2,8 +2,8 @@ package dao
 
 import (
 	// "github.com/lib/pq"
-	"open-account/configs"
-	"open-account/pkg/baselib/db"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/pkg/baselib/db"
 )
 
 // AccountBaseDao 账号系统,基础Dao.

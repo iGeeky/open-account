@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 )
 
 var ErrDataInvalid error

@@ -1,11 +1,11 @@
 package service
 
 import (
-	"open-account/configs"
-	"open-account/internal/api/utils"
-	"open-account/pkg/baselib/cache"
-	"open-account/pkg/baselib/errors"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/internal/api/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/cache"
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 )
 
 // GenerateCode 生成验证码.

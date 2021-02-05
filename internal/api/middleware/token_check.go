@@ -3,13 +3,13 @@ package middleware
 import (
 	// "fmt"
 
-	"open-account/configs"
-	"open-account/internal/api/dao"
-	"open-account/internal/api/service"
-	"open-account/internal/api/utils"
-	"open-account/pkg/baselib/errors"
-	"open-account/pkg/baselib/ginplus"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/internal/api/dao"
+	"github.com/iGeeky/open-account/internal/api/service"
+	"github.com/iGeeky/open-account/internal/api/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
+	"github.com/iGeeky/open-account/pkg/baselib/ginplus"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 
 	"time"
 

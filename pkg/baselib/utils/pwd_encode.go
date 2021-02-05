@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"open-account/pkg/baselib/errors"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 
 	"golang.org/x/crypto/bcrypt"
 )

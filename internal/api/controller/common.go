@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"open-account/pkg/baselib/ginplus"
-	"open-account/pkg/baselib/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/ginplus"
+	"github.com/iGeeky/open-account/pkg/baselib/utils"
 
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"

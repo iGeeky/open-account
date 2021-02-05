@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"open-account/pkg/baselib/log"
-	"open-account/pkg/baselib/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/utils"
 )
 
 // type TokenInfo struct {

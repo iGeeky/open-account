@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"open-account/configs"
-	"open-account/pkg/baselib/errors"
-	"open-account/pkg/baselib/ginplus"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
+	"github.com/iGeeky/open-account/pkg/baselib/ginplus"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 
 	"github.com/gin-gonic/gin"
 )

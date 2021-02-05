@@ -1,4 +1,4 @@
-module open-account
+module github.com/iGeeky/open-account
 
 go 1.14
 

@@ -2,9 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"open-account/configs"
-	"open-account/pkg/baselib/cache"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/configs"
+	"github.com/iGeeky/open-account/pkg/baselib/cache"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 	"strconv"
 	"time"
 )

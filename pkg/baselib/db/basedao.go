@@ -3,8 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
 	stdlog "log"
-	"open-account/pkg/baselib/errors"
 	"os"
 	"reflect"
 	"regexp"
@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"

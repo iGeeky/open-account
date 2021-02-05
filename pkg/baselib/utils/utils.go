@@ -3,8 +3,8 @@ package utils
 import (
 	"encoding/base64"
 	"encoding/binary"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 	"math/rand"
-	"open-account/pkg/baselib/log"
 	"strconv"
 	"time"
 )

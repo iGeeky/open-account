@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"time"
 
-	"open-account/pkg/baselib/cache"
-	"open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/cache"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
 
 	"gopkg.in/yaml.v2"
 )

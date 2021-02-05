@@ -4,9 +4,9 @@ import (
 	// "github.com/lib/pq"
 	"database/sql/driver"
 	"encoding/json"
-	"open-account/pkg/baselib/db"
-	"open-account/pkg/baselib/log"
-	"open-account/pkg/baselib/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/db"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/utils"
 )
 
 // Profile 个人信息, 需要先在Profile类中定义相应的字段.

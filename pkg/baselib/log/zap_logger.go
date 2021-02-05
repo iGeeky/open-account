@@ -43,7 +43,7 @@ func InitLogger(logLevel, logFilename string, development, disableStacktrace boo
 		DisableStacktrace: disableStacktrace, // 关闭堆栈追踪
 		Encoding:          "console",         // 输出格式 console 或 json
 		EncoderConfig:     encoderConfig,     // 编码器配置
-		// InitialFields:    map[string]interface{}{"service": "open-account"}, // 初始化字段，如：添加一个服务器名称
+		// InitialFields:    map[string]interface{}{"service": "github.com/iGeeky/open-account"}, // 初始化字段，如：添加一个服务器名称
 		OutputPaths:      OutputPaths, // 输出到指定文件 stdout（标准输出，正常颜色） stderr（错误输出，红色）
 		ErrorOutputPaths: ErrorOutputPaths,
 	}

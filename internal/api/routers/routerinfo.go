@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"open-account/internal/api/service"
+	"github.com/iGeeky/open-account/internal/api/service"
 
 	"github.com/gin-gonic/gin"
 )

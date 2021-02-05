@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"open-account/pkg/baselib/log"
-	"open-account/pkg/baselib/utils"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/utils"
 )
 
 // SmsSend 发送短信.
