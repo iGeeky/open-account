@@ -30,9 +30,9 @@ func SmsCheck(c *gin.Context) {
 // SmsGetCode 查询短信验证码(用于内部测试使用, 不要暴露接口在外部环境中.)
 func SmsGetCode(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)
-	bizType := ctx.MustGet("bizType")
-	tel := ctx.MustGet("tel")
-	key := ctx.MustGet("key")
+	bizType := ctx.MustQuery("bizType")
+	tel := ctx.MustQuery("tel")
+	key := ctx.MustQuery("key")
 
 	var err error
 

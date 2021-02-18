@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"strings"
+	"time"
+
 	"github.com/iGeeky/open-account/configs"
 	"github.com/iGeeky/open-account/internal/api/dao"
 	"github.com/iGeeky/open-account/internal/api/service"
@@ -9,8 +12,6 @@ import (
 	"github.com/iGeeky/open-account/pkg/baselib/ginplus"
 	"github.com/iGeeky/open-account/pkg/baselib/log"
 	"github.com/iGeeky/open-account/pkg/baselib/utils"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sevlyar/retag"
@@ -156,8 +157,8 @@ func UserRegister(c *gin.Context) {
 // UserCheckTelExist 检查手机号是否存在
 func UserCheckTelExist(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)
-	tel := ctx.MustGet("tel")
-	userType := ctx.GetInt32("userType", service.UserTypeNormal)
+	tel := ctx.MustQuery("tel")
+	userType := ctx.QueryInt32("userType", service.UserTypeNormal)
 	dao := dao.NewUserDao()
 	userInfo := dao.GetByTel(tel, userType)
 	exist := (userInfo != nil)
@@ -167,8 +168,8 @@ func UserCheckTelExist(c *gin.Context) {
 // UserCheckUsernameExist 检查手机号是否存在
 func UserCheckUsernameExist(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)
-	username := ctx.MustGet("username")
-	userType := ctx.GetInt32("userType", service.UserTypeNormal)
+	username := ctx.MustQuery("username")
+	userType := ctx.QueryInt32("userType", service.UserTypeNormal)
 	dao := dao.NewUserDao()
 	userInfo := dao.GetByUsername(username, userType)
 	exist := (userInfo != nil)

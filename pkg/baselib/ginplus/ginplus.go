@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/iGeeky/open-account/pkg/baselib/errors"
-	"github.com/iGeeky/open-account/pkg/baselib/log"
-	"github.com/iGeeky/open-account/pkg/baselib/utils"
 	"io/ioutil"
 	"strconv"
 	"strings"
+
+	"github.com/iGeeky/open-account/pkg/baselib/errors"
+	"github.com/iGeeky/open-account/pkg/baselib/log"
+	"github.com/iGeeky/open-account/pkg/baselib/utils"
 
 	"github.com/gin-gonic/gin"
 	valid "github.com/go-playground/validator/v10"
@@ -126,15 +127,9 @@ func (c *ContextPlus) ParseQueryJSONObject(query interface{}) {
 	}
 }
 
-// Get 获取Get参数.
-func (c *ContextPlus) Get(key string) (value string) {
+// MustQuery 获取Get参数, 如果为空,抛出ErrArgsMissing错误.
+func (c *ContextPlus) MustQuery(key string) (value string) {
 	value = c.Query(key)
-	return
-}
-
-// MustGet 获取Get参数, 如果为空,抛出ErrArgsMissing错误.
-func (c *ContextPlus) MustGet(key string) (value string) {
-	value = c.Get(key)
 	if value == "" {
 		log.Errorf("uri:%v missing args [%s]", c.GetURI(), key)
 		panic(errors.NewError(errors.ErrArgsMissing, fmt.Sprintf("args [%s] is missing", key)))
@@ -142,8 +137,8 @@ func (c *ContextPlus) MustGet(key string) (value string) {
 	return
 }
 
-// GetBool 获取bool值, 其中"",true, yes, on, y, t 都表示真, 其它值都表示假.
-func (c *ContextPlus) GetBool(key string) (b bool) {
+// QueryBool 获取bool值, 其中"",true, yes, on, y, t 都表示真, 其它值都表示假.
+func (c *ContextPlus) QueryBool(key string) (b bool) {
 	value, exist := c.GetQuery(key)
 	if !exist {
 		return
@@ -154,8 +149,8 @@ func (c *ContextPlus) GetBool(key string) (b bool) {
 	return
 }
 
-// GetBoolPtr 获取bool值, 其中"",true, yes, on, y, t 都表示真, 其它值都表示假. 与GetBool不同的是, 当参数不存在时, 返回nil.
-func (c *ContextPlus) GetBoolPtr(key string) (b *bool) {
+// QueryBoolPtr 获取bool值, 其中"",true, yes, on, y, t 都表示真, 其它值都表示假. 与GetBool不同的是, 当参数不存在时, 返回nil.
+func (c *ContextPlus) QueryBoolPtr(key string) (b *bool) {
 	value, exist := c.GetQuery(key)
 	if !exist {
 		return
@@ -167,8 +162,8 @@ func (c *ContextPlus) GetBoolPtr(key string) (b *bool) {
 	return
 }
 
-// GetInt32 获取int32值. 如果为空或解析失败, 返回默认值
-func (c *ContextPlus) GetInt32(key string, def int32) (value int32) {
+// QueryInt32 获取int32值. 如果为空或解析失败, 返回默认值
+func (c *ContextPlus) QueryInt32(key string, def int32) (value int32) {
 	strvalue := c.Query(key)
 	if strvalue == "" {
 		value = def
@@ -186,8 +181,8 @@ func (c *ContextPlus) GetInt32(key string, def int32) (value int32) {
 	return
 }
 
-// GetInt64 获取int64值. 如果为空或解析失败, 返回默认值
-func (c *ContextPlus) GetInt64(key string, def int64) (value int64) {
+// QueryInt64 获取int64值. 如果为空或解析失败, 返回默认值
+func (c *ContextPlus) QueryInt64(key string, def int64) (value int64) {
 	strvalue := c.Query(key)
 	if strvalue == "" {
 		value = def
@@ -204,9 +199,9 @@ func (c *ContextPlus) GetInt64(key string, def int64) (value int64) {
 	return
 }
 
-// MustGetInt32 获取int32值. 如果出错,抛出ErrArgsInvalid错误.
-func (c *ContextPlus) MustGetInt32(key string) (value int32) {
-	strvalue := c.MustGet(key)
+// MustQueryInt32 获取int32值. 如果出错,抛出ErrArgsInvalid错误.
+func (c *ContextPlus) MustQueryInt32(key string) (value int32) {
+	strvalue := c.MustQuery(key)
 	intValue, err := strconv.ParseInt(strvalue, 10, 32)
 	if err != nil {
 		log.Errorf("uri:%v args [%s] value(%s) is invalid, need int32", c.GetURI(), key, strvalue)
@@ -216,9 +211,9 @@ func (c *ContextPlus) MustGetInt32(key string) (value int32) {
 	return
 }
 
-// MustGetInt64 获取int64值. 如果出错,抛出ErrArgsInvalid错误.
-func (c *ContextPlus) MustGetInt64(key string) (value int64) {
-	strvalue := c.MustGet(key)
+// MustQueryInt64 获取int64值. 如果出错,抛出ErrArgsInvalid错误.
+func (c *ContextPlus) MustQueryInt64(key string) (value int64) {
+	strvalue := c.MustQuery(key)
 	intValue, err := strconv.ParseInt(strvalue, 10, 64)
 	if err != nil {
 		log.Errorf("uri:%v args [%s] value(%s) is invalid, need int64", c.GetURI(), key, strvalue)
