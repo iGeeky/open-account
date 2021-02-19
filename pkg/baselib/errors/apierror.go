@@ -46,6 +46,8 @@ const (
 	ErrUserHaveUsername string = "ERR_USER_HAVE_USERNAME"
 	// ErrCaptchaError 人机验证码错误
 	ErrCaptchaError string = "ERR_CAPTCHA_ERROR"
+	// ErrContentTypeInvalid 请求的Content-Type不合法.
+	ErrContentTypeInvalid string = "ERR_CONTENT_TYPE_INVALID"
 )
 
 // GetStatusCode 获取错误对应的响应码
