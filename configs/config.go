@@ -13,12 +13,12 @@ import (
 
 // CORS 跨域请求配置参数
 type CORS struct {
-	Enable           bool   `toml:"enable"`
-	AllowOrigins     string `toml:"allow_origins"`
-	AllowMethods     string `toml:"allow_methods"`
-	AllowHeaders     string `toml:"allow_headers"`
-	AllowCredentials bool   `toml:"allow_credentials"`
-	MaxAge           int    `toml:"max_age"`
+	Enable           bool   `yaml:"enable"`
+	AllowOrigins     string `yaml:"allow_origins"`
+	AllowMethods     string `yaml:"allow_methods"`
+	AllowHeaders     string `yaml:"allow_headers"`
+	AllowCredentials bool   `yaml:"allow_credentials"`
+	MaxAge           int    `yaml:"max_age"`
 }
 
 // DatabaseConfig 数据库配置.

@@ -99,7 +99,7 @@ func getContentType(filename string) string {
 }
 
 func CheckFileExist(host, filename, hash, appID, appKey, id string) *OkJson {
-	uri := host + "/upload/check_exist"
+	uri := host + "/v1/upload/check_exist"
 
 	res := &OkJson{Ok: false, Reason: errors.ErrServerError}
 	contentType := getContentType(filename)
@@ -132,7 +132,7 @@ func CheckFileExist(host, filename, hash, appID, appKey, id string) *OkJson {
 }
 
 func PostBody2UploadSvr(host, filename string, content []byte, appID, appKey, id, target, fileType, imageProcess string, timeout time.Duration, isTest bool) *OkJson {
-	uri := host + "/upload/simple"
+	uri := host + "/v1/upload/simple"
 	res := &OkJson{Ok: false, Reason: errors.ErrServerError}
 
 	contentType := getContentType(filename)
@@ -202,7 +202,7 @@ type UploadURLSimpleReq struct {
 }
 
 func UploadURL(host, appID, appKey string, uploadURL *UploadURLSimpleReq, timeout time.Duration, isTest bool) *OkJson {
-	uri := host + "/upload/url/simple"
+	uri := host + "/v1/upload/url"
 	res := &OkJson{Ok: false, Reason: errors.ErrServerError}
 
 	headers := make(map[string]string, 10)
