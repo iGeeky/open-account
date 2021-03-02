@@ -46,7 +46,47 @@ func (c *ContextPlus) CustomHeaderName(headerName string) (customHeaderName stri
 
 // GetCustomHeader 获取自定义的请求头(请求头名称会自动添加配置的customHeaderPrefix)
 func (c *ContextPlus) GetCustomHeader(key string) string {
-	return c.GetHeader(c.CustomHeaderName(key))
+	value := c.GetHeader(c.CustomHeaderName(key))
+	value = strings.TrimSpace(value)
+	return value
+}
+
+// MustGetCustomHeader 获取自定义请求头, 如果获取失败, 抛出异常.
+func (c *ContextPlus) MustGetCustomHeader(key string) string {
+	headerName := c.CustomHeaderName(key)
+	value := c.GetHeader(headerName)
+	value = strings.TrimSpace(value)
+	if value == "" {
+		log.Errorf("uri:%v header [%s] is missing or has an empty value", c.GetURI(), headerName)
+		panic(errors.NewError(errors.ErrArgsMissing, fmt.Sprintf("header %s is missing or has an empty value", headerName)))
+	}
+	return value
+}
+
+// MustGetCustomHeaderInt 获取一个int请求头值
+func (c *ContextPlus) MustGetCustomHeaderInt(key string, def int) (value int) {
+	strvalue := c.MustGetCustomHeader(key)
+	intValue, err := strconv.ParseInt(strvalue, 10, 32)
+	if err != nil {
+		log.Errorf("Invalid int32 value(%s) err: %v", strvalue, err)
+		value = def
+	} else {
+		value = int(intValue)
+	}
+	return
+}
+
+// MustGetCustomHeaderInt64 获取一个int请求头值
+func (c *ContextPlus) MustGetCustomHeaderInt64(key string, def int64) (value int64) {
+	strvalue := c.MustGetCustomHeader(key)
+	intValue, err := strconv.ParseInt(strvalue, 10, 32)
+	if err != nil {
+		log.Errorf("Invalid int64 value(%s) err: %v", strvalue, err)
+		value = def
+	} else {
+		value = intValue
+	}
+	return
 }
 
 // MustGetUserID 获取用户ID,用户类型.

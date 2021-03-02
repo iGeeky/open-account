@@ -222,7 +222,7 @@ func UserLogin(c *gin.Context) {
 func UserLogout(c *gin.Context) {
 	ctx := ginplus.NewContetPlus(c)
 	userID, _ := ctx.MustGetUserID()
-	token := ctx.GetCustomHeader("token")
+	token := ctx.MustGetCustomHeader("token")
 	_ = apiutils.TokenDelete(userID, token)
 	ctx.JsonOk(gin.H{})
 }

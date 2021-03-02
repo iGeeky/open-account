@@ -10,7 +10,7 @@ func Assert(err error) {
 const (
 	// ErrArgsInvalid 参数不合法
 	ErrArgsInvalid string = "ERR_ARGS_INVALID"
-	// ErrArgsMissing 参数缺失
+	// ErrArgsMissing 参数缺失(get参数,post参数,请求头参数)
 	ErrArgsMissing string = "ERR_ARGS_MISSING"
 	// ErrServerError 服务器错误
 	ErrServerError string = "ERR_SERVER_ERROR"
