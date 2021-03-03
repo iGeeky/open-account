@@ -63,6 +63,40 @@ func (c *ContextPlus) MustGetCustomHeader(key string) string {
 	return value
 }
 
+// GetCustomHeaderInt 获取一个int请求头值
+func (c *ContextPlus) GetCustomHeaderInt(key string, def int) (value int) {
+	strvalue := c.GetCustomHeader(key)
+	if strvalue == "" {
+		value = def
+	} else {
+		intValue, err := strconv.ParseInt(strvalue, 10, 32)
+		if err != nil {
+			log.Errorf("Invalid int32 value(%s) err: %v", strvalue, err)
+			value = def
+		} else {
+			value = int(intValue)
+		}
+	}
+	return
+}
+
+// GetCustomHeaderInt64 获取一个int请求头值
+func (c *ContextPlus) GetCustomHeaderInt64(key string, def int64) (value int64) {
+	strvalue := c.GetCustomHeader(key)
+	if strvalue == "" {
+		value = def
+	} else {
+		intValue, err := strconv.ParseInt(strvalue, 10, 32)
+		if err != nil {
+			log.Errorf("Invalid int64 value(%s) err: %v", strvalue, err)
+			value = def
+		} else {
+			value = intValue
+		}
+	}
+	return
+}
+
 // MustGetCustomHeaderInt 获取一个int请求头值
 func (c *ContextPlus) MustGetCustomHeaderInt(key string, def int) (value int) {
 	strvalue := c.MustGetCustomHeader(key)
